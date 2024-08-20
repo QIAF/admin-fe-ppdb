@@ -9,24 +9,14 @@ import ScoresPage from "./pages/Scores/ScoresPage";
 import UpdateUser from "./pages/User/UpdateUser";
 import MajorsPage from "./pages/Majors/MajorsPage";
 import Login from "./pages/Login/Login";
+import RoutesPage from "./Routes/RoutesPage";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      {/* <UpdateUser /> */}
-      <Login />
-      {/* <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/users" element={<User />} />
-          <Route path="/users/detailUser/:id" element={<DetailUser />} />
-          <Route path="/users/updateUser/:id" element={<UpdateUser />} />
-          <Route path="/scores" element={<ScoresPage />} />
-          <Route path="/majors" element={<MajorsPage />} />
-        </Route>
-      </Routes> */}
+      <RoutesPage />
     </>
   );
 }

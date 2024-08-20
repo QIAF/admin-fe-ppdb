@@ -8,14 +8,17 @@ import { sides } from "../../utils/dataObj";
 import Tranparent from "../UI/Button/Tranparent";
 import CustomModal from "../UI/Modal/Modal";
 import LogoutIcon from "../../assets/images/Icon-Lg.svg";
+import Logoutlg from "../../assets/images/logout-large.svg";
 import Logo from "../../assets/images/img-logo-hijau.png";
 import Button from "../UI/Button/Button";
 
 export default function Sidebar() {
   const [modal, setModal] = useState(false);
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    navigate("");
+    localStorage.removeItem("token");
+    navigate("/");
   };
   return (
     <>
@@ -61,7 +64,7 @@ export default function Sidebar() {
         {modal && (
           <Tranparent disabled={true} className="min-vw-100">
             <CustomModal
-              icon={logout}
+              icon={Logoutlg}
               title={"Keluar?"}
               content={
                 "Ingin beristirahat sejenak? keluar dan nikmati waktu Anda."

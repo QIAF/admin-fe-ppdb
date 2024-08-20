@@ -10,7 +10,7 @@ export const sides = [
     icon: DashboardIcon,
     icon2: DashboardIconWh,
     label: 'Dashboard',
-    link: '/'
+    link: '/dashboard'
   },
   {
     icon: KriteriaIcon,

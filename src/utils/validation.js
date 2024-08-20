@@ -1,81 +1,33 @@
-// export const validateStudentDataIsChanges = (form, data) => {
-//   let valid = false;
-//   if (form?.student_name !== data?.student_name) {
-//     valid = true;
-//   }
-//   if (form?.family_card_number !== data?.family_card_number) {
-//     valid = true;
-//   }
-//   if (form?.student_gender !== data?.student_gender) {
-//     valid = true;
-//   }
-//   if (form?.place_birth !== data?.place_birth) {
-//     valid = true;
-//   }
-//   if (form?.date_birth !== data?.date_birth) {
-//     valid = true;
-//   }
-//   if (form?.student_address !== data?.student_address) {
-//     valid = true;
-//   }
-//   if (form?.student_address_now !== data?.student_address_now) {
-//     valid = true;
-//   }
-//   if (form?.student_distance !== data?.student_distance) {
-//     valid = true;
-//   }
-//   if (form?.student_religion !== data?.student_religion) {
-//     valid = true;
-//   }
-//   if (form?.student_blood_type !== student_blood_type) {
-//     valid = true;
-//   }
-//   if (form?.student_height !== student_height) {
-//     valid = true;
-//   }
-//   if (form?.student_weight !== student_weight) {
-//     valid = true;
-//   }
-//   if (form?.student_child !== student_child) {
-//     valid = true;
-//   }
-//   if (form?.student_kps !== student_kps) {
-//     valid = true;
-//   }
-//   if (form?.student_hobby !== student_hobby) {
-//     valid = true;
-//   }
-//   if (form?.father_name !== student_name) {
-//     valid = true;
-//   }
-//   if (form?.place_birth_father) {
-//     valid = true;
-//   }
-//   if (form?.father_birth) {
-//     valid = true;
-//   }
-//   if (form?.father_job) {
-//     valid = true;
-//   }
-//   if (form?.father_income) {
-//     valid = true;
-//   }
-//   if (form?.mother_name) {
-//     valid = true;
-//   }
-//   if (form?.place_birth_mother) {
-//     valid = true;
-//   }
-//   if (form?.mother_job) {
-//     valid = true;
-//   }
-//   if (form?.mother_income) {
-//     valid = true;
-//   }
-//   if (form?.phoneNumber_house) {
-//     valid = true;
-//   }
-// };
+export const loginData = (form) => {
+  const formLogin = {
+    email: form.email,
+    password: form.password,
+  };
+  return formLogin;
+};
+
+export const validateLogin = (form, setError) => {
+  let valid = true;
+  const emailRegex = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const newErrors = {
+    email: "",
+    password: "",
+  };
+  if (!form.email) {
+    newErrors.email = "Email wajib diisi";
+    valid = false;
+  } else if (!emailRegex(form.email)) {
+    newErrors.email = "Masukkan email yang valid";
+  }
+
+  if (!form.password) {
+    newErrors.password = "Password wajib diisi";
+    valid = false;
+  }
+  setError(newErrors);
+  return valid;
+};
+
 
 export const validateStudentData = (form, setErrors) => {
   let valid = true;
@@ -146,7 +98,6 @@ export const validateStudentData = (form, setErrors) => {
     english5: "",
   };
 };
-
 
 const formatDate = (date) => {
     if (!date) return '';
