@@ -47,7 +47,7 @@ export default function UserPage() {
           return (
             <tr className="text-nowrap cursor-pointer" key={data?.id}>
               {/* <td>{data?.id}</td> */}
-              {/* <td>{data?.user_id}</td> */}
+              <td>{data?.user_id}</td>
               <td>{data?.student_name}</td>
               <td>{data?.student_gender}</td>
               <td>{data?.nisn}</td>

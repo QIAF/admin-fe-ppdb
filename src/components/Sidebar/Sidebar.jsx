@@ -9,6 +9,7 @@ import Tranparent from "../UI/Button/Tranparent";
 import CustomModal from "../UI/Modal/Modal";
 import LogoutIcon from "../../assets/images/Icon-Lg.svg";
 import Logo from "../../assets/images/img-logo-hijau.png";
+import Button from "../UI/Button/Button";
 
 export default function Sidebar() {
   const [modal, setModal] = useState(false);
@@ -48,13 +49,13 @@ export default function Sidebar() {
             );
           })}
         </ul>
-        <btn
+        <Button
           onClick={() => setModal(true)}
           className="logoutBtn mt-3 text-primary d-flex btn"
         >
           <p>Logout</p>
           <img src={LogoutIcon} alt="Logout" />
-        </btn>
+        </Button>
 
         {/* Modal Logout */}
         {modal && (

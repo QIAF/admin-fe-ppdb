@@ -18,39 +18,47 @@ export default function useForm(initialState, initialError) {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
-  };
-
   const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    const [key, criteria_name] = id.split(".");
+    const { name, value, files } = e.target;
 
+    if (files && files.length > 0) {
+      // Handle file input
+      setForm((prevForm) => ({
+        ...prevForm,
+        [name]: files[0], // Store the file object
+      }));
+    } else {
+      // Handle text input
+      setForm((prevForm) => ({
+        ...prevForm,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, files } = e.target;
     setForm((prevForm) => ({
       ...prevForm,
-      criteriaValues: {
-        ...prevForm.criteriaValues,
-        [criteria_name]: {
-          ...prevForm.criteriaValues[criteria_name],
-          calculation: value,
-        },
-      },
+      [name]: files[0],
     }));
   };
 
-  const handleInputScore = (criteriaName, value) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      criteria_values: {
-        ...prevForm.criteria_values,
-        [criteriaName]: value,
-      },
-    }));
-  };
+  // const handleInputChange = (e) => {
+  //   const { id, value } = e.target;
+  //   const [key, criteria_name] = id.split(".");
+
+  //   setForm((prevForm) => ({
+  //     ...prevForm,
+  //     criteriaValues: {
+  //       ...prevForm.criteriaValues,
+  //       [criteria_name]: {
+  //         ...prevForm.criteriaValues[criteria_name],
+  //         calculation: value,
+  //       },
+  //     },
+  //   }));
+  // };
 
   return {
     form,
@@ -60,7 +68,6 @@ export default function useForm(initialState, initialError) {
     handleInput,
     setLoading,
     handleChange,
-    handleInputScore,
     handleInputChange,
     loading,
   };

@@ -13,6 +13,7 @@ import {
   validateScoreIsChanges,
 } from "../../utils/validation";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ScoresPage() {
   const [editedData, setEditedData] = useState(null);
@@ -270,8 +271,6 @@ export default function ScoresPage() {
       const reportScores = response.data.data?.allReportScore ?? [];
 
       console.log("Student Data API Response:", response.data);
-
-      // Combine student data with report scores and final scores
       const combinedData = studentData.map((student) => {
         const reportScore = reportScores.find(
           (report) => report.user_id === student.user_id
@@ -316,39 +315,6 @@ export default function ScoresPage() {
     fetchData();
   }, []);
 
-  // const handleUpdateData = async (data) => {
-  //   if (!data || !data.id) {
-  //     console.error("Invalid data:", data);
-  //     toast.error("Data ID is missing.");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-  //   const formData = dataScore(data); // Format data sesuai kebutuhan
-  //   console.log("Form Data:", formData);
-
-  //   try {
-  //     const res = await axios.patch(
-  //       `http://localhost:3000/api/v1/finalScore/update/${data.id}`, // Pastikan URL benar
-  //       formData
-  //     );
-  //     if (res.status === 200) {
-  //       console.log(res.data);
-  //       fetchData(); // Refresh data setelah pembaruan berhasil
-  //       toast.success("Anda berhasil mengubah criteria", { delay: 800 });
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       "Error updating data:",
-  //       error.response?.data || error.message
-  //     );
-  //     toast.error("Anda gagal mengubah criteria", { delay: 800 });
-  //   } finally {
-  //     setEditModal(false);
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleUpdateData = async (data) => {
     if (!data || !data.id) {
       console.error("Data tidak valid:", data);
@@ -368,14 +334,14 @@ export default function ScoresPage() {
       if (res.status === 200) {
         console.log("Data Terbaru:", res.data);
         fetchData(); // Refresh data setelah pembaruan berhasil
-        toast.success("Anda berhasil mengubah kriteria", { delay: 800 });
+        toast.success("Anda berhasil mengubah nilai", { delay: 800 });
       }
     } catch (error) {
       console.error(
         "Kesalahan saat memperbarui data:",
         error.response?.data || error.message
       );
-      toast.error("Anda gagal mengubah kriteria", { delay: 800 });
+      toast.error("Anda gagal mengubah nilai", { delay: 800 });
     } finally {
       setEditModal(false);
       setLoading(false);
@@ -391,7 +357,7 @@ export default function ScoresPage() {
       >
         <RowTable
           data={data}
-          ifEmpty={"Tidak ada data kriteria!"}
+          ifEmpty={"Tidak ada daftar nilai"}
           totalRow={5}
           totalCol={10}
           renderItem={(data, index, offset) => {
@@ -399,7 +365,7 @@ export default function ScoresPage() {
               <tr
                 onClick={() => handleModal(data, offset)}
                 data-bs-toggle="modal"
-                data-bs-target="#medicineModal"
+                // data-bs-target="#medicineModal"
                 className="text-nowrap cursor-pointer"
                 key={data?.id}
               >
@@ -437,156 +403,6 @@ export default function ScoresPage() {
     </>
   );
 }
-
-// const ScoresModal = ({
-//   title,
-//   data,
-//   setEditModal,
-//   forModal,
-//   loading,
-//   handleAction,
-//   handleDelete,
-//   offset,
-// }) => {
-//   const initState = {
-//     id: data?.id ?? "",
-//     health_score: data?.health_score ?? "",
-//     interview_score: data?.interview_score ?? "",
-//   };
-//   const errorState = {
-//     health_score: "",
-//     interview_score: "",
-//   };
-//   const [isFormChanged, setIsFormChanged] = useState(false);
-//   const [deleteConfirm, setDeleteConfirm] = useState(false);
-
-//   const { form, setForm, handleInput, handleChange, errors, setErrors } =
-//     useForm(initState, errorState);
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     if (validateScoreForm(form, setErrors)) {
-//       handleAction(form);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const isChanged = validateScoreIsChanges(form, data);
-//     setIsFormChanged(isChanged);
-//   }, [form, data]);
-
-//   const handleDeleteAction = () => {
-//     handleDelete(data?.id, offset);
-//     setDeleteConfirm(false);
-//   };
-
-//   return (
-//     <>
-//       {deleteConfirm && (
-//         <Tranparent disabled={true} style={{ zIndex: 55 }}>
-//           <CustomModal
-//             title={"Hapus Kriteria?"}
-//             content={
-//               "Apabila anda menghapus Criteria, data keseluruhan criteria akan hilang"
-//             }
-//             confirmAction={handleDeleteAction}
-//             cancelAction={() => setDeleteConfirm(false)}
-//           />
-//         </Tranparent>
-//       )}
-
-//       <div
-//         className="modal-backdrop"
-//         style={{
-//           backgroundColor: "rgba(0, 0, 0, 0.25)",
-//           zIndex: "50",
-//         }}
-//       ></div>
-//       <div
-//         className="modal"
-//         tabIndex="-1"
-//         role="dialog"
-//         aria-hidden="true"
-//         style={{ display: "block", zIndex: "51" }}
-//       >
-//         <div className="modal-dialog modal-dialog-centered">
-//           <div className="modal-content rounded-4 border-0">
-//             <div className="modal-header">
-//               <h1 className="modal-title fs-2">{title}</h1>
-//               <button
-//                 type="button"
-//                 className="btn-close"
-//                 onClick={() => setEditModal(false)}
-//               />
-//             </div>
-//             <div className="modal-body px-5">
-//               <form>
-//                 <div className="mb-3 row">
-//                   <label
-//                     htmlFor="health_score"
-//                     className="col-sm-3 col-form-label "
-//                   >
-//                     Nilai Kesehatan
-//                   </label>
-//                   <div className="col-sm-9">
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       id="health_score"
-//                       name="health_score"
-//                       value={form.health_score}
-//                       onChange={handleInput}
-//                     />
-//                   </div>
-//                 </div>
-//                 <div className="mb-3 row">
-//                   <label
-//                     htmlFor="interview_score"
-//                     className="col-sm-3 col-form-label"
-//                   >
-//                     Nilai Interview
-//                   </label>
-//                   <div className="col-sm-9">
-//                     <input
-//                       type="text"
-//                       className="form-control"
-//                       id="interview_score"
-//                       name="interview_score"
-//                       value={form.interview_score}
-//                       onChange={handleInput}
-//                     />
-//                   </div>
-//                 </div>
-//               </form>
-//             </div>
-
-//             <div className="modal-footer">
-//               <div className="d-flex flex-row gap-3 justify-content-start w-100 align-items-center">
-//                 <Button
-//                   disabled={!isFormChanged || loading}
-//                   onClick={handleSubmit}
-//                   style={{ width: "7.125rem" }}
-//                   className={"btn-primary text-white fw-semibold"}
-//                 >
-//                   {loading ? <SpinnerSM /> : "Simpan"}
-//                 </Button>
-//                 {forModal === "post" ? null : (
-//                   <Button
-//                     type="button"
-//                     onClick={() => setDeleteConfirm(true)}
-//                     className="btn-outline-primary fw-semibold border-2 text-nowrap"
-//                   >
-//                     Hapus
-//                   </Button>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
 
 const ScoresModal = ({
   title,

@@ -2,8 +2,8 @@
     border-radius: 1.8rem;
     padding: 1.5rem;
     gap: 2rem;
-    background: #FFF;
-    box-shadow: 0px 0px 24px 0px rgba(0, 0, 0, 0.10);
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 17.9375rem;
 }
 
@@ -49,3 +49,5 @@
         left: 42.5%;
     }
 }
+
+

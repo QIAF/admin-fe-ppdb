@@ -4,11 +4,13 @@ import { thead } from "../../utils/dataObj";
 import UserTable from "./UserTable";
 import RowTable from "../../components/UI/Table/RowTable";
 import { useNavigate } from "react-router";
+import Footer from "../../components/Footer/Footer";
 
 export default function User() {
   const navigate = useNavigate();
   const [isPending, setIsPending] = useState(false);
   const [isError, setIsError] = useState(false);
+
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
@@ -20,8 +22,19 @@ export default function User() {
         //   },
         // }
       );
-      console.log("API Response:", response.data);
-      setData(response.data.data.allStudentData); // Asumsi data berada di dalam results
+      const studentData = response.data.data?.allStudentData ?? [];
+      const reportScores = response.data.data?.allReportScore ?? [];
+
+      const combinedData = studentData.map((student) => {
+        const report = reportScores.find(
+          (score) => score.user_id === student.id
+        );
+        return { ...student, report };
+      });
+
+      console.log("Combined Data:", combinedData); // Cek data gabungan
+      setData(combinedData);
+
       setIsPending(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -39,34 +52,36 @@ export default function User() {
     });
   };
   return (
-    <UserTable
-      thead={thead}
-      pageFor={"user"}
-      className={"border"}
-      maxHeight={"45rem"}
-    >
-      <RowTable
-        isError={isError}
-        isPending={isPending}
-        ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
-        data={data}
-        totalRow={3}
-        totalCol={8}
-        renderItem={(data, index) => {
-          return (
-            <tr
-              onClick={() => onNavigate(data)}
-              className="text-nowrap cursor-pointer"
-              key={index}
-            >
-              <td>{data?.user_id}</td>
-              <td>{data?.student_name}</td>
-              <td>{data?.student_gender}</td>
-              <td>{data?.nisn}</td>
-            </tr>
-          );
-        }}
-      />
-    </UserTable>
+    <>
+      <UserTable
+        thead={thead}
+        pageFor={"user"}
+        className={"border"}
+        maxHeight={"45rem"}
+      >
+        <RowTable
+          isError={isError}
+          isPending={isPending}
+          ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
+          data={data}
+          totalRow={3}
+          totalCol={8}
+          renderItem={(data, index) => {
+            return (
+              <tr
+                onClick={() => onNavigate(data)}
+                className="text-nowrap cursor-pointer"
+                key={index}
+              >
+                <td>{data?.user_id}</td>
+                <td>{data?.student_name}</td>
+                <td>{data?.student_gender}</td>
+                <td>{data?.nisn}</td>
+              </tr>
+            );
+          }}
+        />
+      </UserTable>
+    </>
   );
 }
