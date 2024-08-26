@@ -11,7 +11,7 @@ export default function Login({ title, props }) {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    user_number: "",
     password: "",
   });
 
@@ -43,7 +43,7 @@ export default function Login({ title, props }) {
         }
       }
     } catch (error) {
-      toast.error("Email atau password tidak valid", { delay: 300 });
+      toast.error("user_number atau password tidak valid", { delay: 300 });
       console.error("Failed to log in, please enter valid data", error);
     }
   };
@@ -68,15 +68,15 @@ export default function Login({ title, props }) {
           >
             <div className="form-floating mb-3">
               <Input
-                type="email"
+                type="text"
                 className="form-control"
-                name="email"
-                id="email"
+                name="user_number"
+                id="user_number"
                 placeholder="name@example.com"
-                value={form.email}
+                value={form.user_number}
                 onChange={handleInput}
               />
-              <label htmlFor="floatingInput">Email</label>
+              <label htmlFor="floatingInput">Nomor admin</label>
             </div>
             <div className="form-floating mb-3">
               <Input

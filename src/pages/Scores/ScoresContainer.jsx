@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import plus from "../../assets/images/plus.png";
+import { Input } from "../../components/UI/Input/Input";
 
 export default function ScoresContainer({
   children,
-  handleInput,
-  inputValue,
+  handleInputSearch,
+  searchTerm,
   setAddModal,
   name,
   thead,
@@ -30,21 +30,16 @@ export default function ScoresContainer({
         </div>
       ) : (
         <div className="d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-end align-items-md-center mb-4">
-          <button
-            type="button"
-            onClick={() => setAddModal(true)}
-            className="btn btn-primary rounded-3 btn-md text-white"
-            style={{
-              height: "2.8125rem",
-              display: "flex",
-              width: "11rem",
-              padding: "0.25rem 0.625rem",
-              alignItems: "center",
-            }}
-          >
-            <img src={plus} alt="" className="me-2" />
-            Tambah Nilai
-          </button>
+          <div className="position-relative mt-3 mt-md-0">
+            <Input
+              name={name}
+              onChange={(e) => handleInputSearch(e)}
+              value={searchTerm}
+              type={"text"}
+              placeholder="Cari nama siswa..."
+              className={"rounded-4 ps-5 border-2 bg-green py-1"}
+            />
+          </div>
         </div>
       )}
 

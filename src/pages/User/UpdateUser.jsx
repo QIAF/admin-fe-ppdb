@@ -151,13 +151,6 @@ export default function UpdateUser() {
   const [isFormChanged, setIsFormChanged] = useState(false);
 
   const handleUpdateData = async (data) => {
-    // console.log("Data received for update:", data);
-    // if (!data || !data.id) {
-    //   console.error("Data tidak valid:", data);
-    //   toast.error("ID Data hilang.");
-    //   return;
-    // }
-
     const formData = dataStudent(data);
     console.log("Form Data:", formData);
     try {

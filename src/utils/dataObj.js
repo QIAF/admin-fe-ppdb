@@ -21,13 +21,13 @@ export const sides = [
   {
     icon: UserIcon,
     icon2: UserIconWh,
-    label: 'Data User',
+    label: 'Data Siswa',
     link: '/users'
   },
   {
     icon: UserIcon,
     icon2: UserIconWh,
-    label: 'Data Major',
+    label: 'Bidang Keahlian',
     link: '/majors'
   },
 ]
@@ -44,7 +44,7 @@ export const navTitle = [
 
     {
       route: 'users',
-      title: 'Data User',
+      title: 'Data Calon Siswa',
     },
     {
       route: 'majors',
@@ -52,7 +52,7 @@ export const navTitle = [
     },
   ]
 
-export const thead = ["User ID","Nama Siswa", "Jenis Kelamin" , "NISN"];
+export const thead = ["No","NISN","Nama Siswa", "Jenis Kelamin"];
 export const theadScores = ["User ID","Nama Siswa", "Nilai Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil"];
-export const theadAllScores = ["Nama Siswa", "Nilai Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil"];
+export const theadAllScores = ["Nama Siswa", "Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil", "Rank", "Bidang Keahlian", "Deskripsi"];
 export const theadAllMajors = ["Nama Bidang", "Deskripsi", "Gambar"];

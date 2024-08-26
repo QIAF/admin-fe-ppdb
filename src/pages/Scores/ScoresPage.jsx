@@ -9,11 +9,14 @@ import useForm from "../../components/Hooks/UseForm";
 import Button from "../../components/UI/Button/Button";
 import {
   dataScore,
+  dataStudent,
   validateScoreForm,
   validateScoreIsChanges,
 } from "../../utils/validation";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Spinner from "../../components/Loader/Spinner";
+import { Input } from "../../components/UI/Input/Input";
 
 export default function ScoresPage() {
   const [editedData, setEditedData] = useState(null);
@@ -23,7 +26,10 @@ export default function ScoresPage() {
   const [isPending, setIsPending] = useState(false);
   const [isError, setIsError] = useState(false);
   const [data, setData] = useState([]);
-  const [dataReport, setDataReport] = useState([]);
+  const [rank, setRank] = useState([]);
+
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const initState = {
     offset: null,
@@ -37,33 +43,27 @@ export default function ScoresPage() {
     setEditedData(data);
     setOffset(offset);
     setForm({
-      user_id: data.user_id, // Ensure these fields are correctly set
+      // user_id: data.user_id, // Ensure these fields are correctly set
       health_score: data.health_score,
       interview_score: data.interview_score,
+      major_result: data.major_result,
+      result_description: data.result_description,
       id: data.id,
     });
     setEditModal(true);
   };
-
   // const fetchData = async () => {
   //   try {
-  //     // Fetch final scores
-  //     const resScore = await axios.get(
-  //       "http://localhost:3000/api/v1/finalScore"
-  //     );
-  //     const finalScores = resScore.data?.data ?? [];
-  //     console.log("API Response:", resScore.data);
-
-  //     // Fetch student data
   //     const response = await axios.get(
   //       "http://localhost:3000/api/v1/studentData"
   //     );
+
   //     const studentData = response.data.data?.allStudentData ?? [];
   //     const reportScores = response.data.data?.allReportScore ?? [];
+  //     const finalScores = response.data.data?.allFinalScore ?? [];
+  //     console.log("Final Scoree Manaaa", finalScores);
 
-  //     console.log("API Response:", response.data);
-
-  //     // Combine student data with report scores and final scores
+  //     console.log("Student Data API Response:", response.data);
   //     const combinedData = studentData.map((student) => {
   //       const reportScore = reportScores.find(
   //         (report) => report.user_id === student.user_id
@@ -71,18 +71,32 @@ export default function ScoresPage() {
   //       const finalScore = finalScores.find(
   //         (score) => score.user_id === student.user_id
   //       );
+  //       console.log("finalll ada ga", finalScore);
+  //       const total_report_score = reportScore?.total_report_score ?? 0;
+  //       const health_score = finalScore?.health_score ?? 0;
+  //       const interview_score = finalScore?.interview_score ?? 0;
+  //       const average_final_score = finalScore?.average_final_score ?? 0;
+
+  //       // Log the scores
+  //       console.log(`Student ID: ${student.user_id}`);
+  //       console.log(`Total Report Score: ${total_report_score}`);
+  //       console.log(`Health Score: ${health_score}`);
+  //       console.log(`Interview Score: ${interview_score}`);
+  //       console.log(`Average Final Score: ${average_final_score}`);
+
   //       return {
   //         ...student,
-  //         total_report_score: reportScore?.total_report_score ?? 0,
-  //         health_score: finalScore?.health_score ?? 0,
-  //         interview_score: finalScore?.interview_score ?? 0,
-  //         average_final_score: finalScore?.average_final_score ?? 0,
+  //         total_report_score,
+  //         health_score,
+  //         interview_score,
+  //         average_final_score,
   //         id: student.user_id,
   //       };
   //     });
 
   //     setData(combinedData); // Update state with combined data
   //     console.log("Combined Data:", combinedData);
+  //     setFilteredData(combinedData);
   //     setIsPending(false);
   //   } catch (error) {
   //     console.error("Error fetching data:", error);
@@ -90,187 +104,101 @@ export default function ScoresPage() {
   //     setIsPending(false);
   //   }
   // };
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
-  // const fetchData = async () => {
-  //   try {
-  //     // Fetch final scores
-  //     const resScore = await axios.get(
-  //       "http://localhost:3000/api/v1/finalScore"
-  //     );
-  //     const finalScores = resScore.data?.data ?? [];
-  //     console.log("API Response:", resScore.data);
-
-  //     // Fetch student data
-  //     const response = await axios.get(
-  //       "http://localhost:3000/api/v1/studentData"
-  //     );
-  //     const studentData = response.data.data?.allStudentData ?? [];
-  //     const reportScores = response.data.data?.allReportScore ?? [];
-  //     console.log("Report Scoree", reportScores);
-
-  //     console.log("API Response:", response.data);
-
-  //     // Combine student data with report scores and final scores
-  //     const combinedData = studentData.map((student) => {
-  //       const reportScore = reportScores.find(
-  //         (report) => report.user_id === student.user_id
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:3000/api/v1/studentData"
   //       );
-  //       const finalScore = finalScores.find(
-  //         (score) => score.user_id === student.user_id
+  //       const studentData = response.data.data?.allStudentData ?? [];
+  //       const reportScores = response.data.data?.allReportScore ?? [];
+  //       const finalScores = response.data.data?.allFinalScore ?? [];
+
+  //       const combinedData = studentData.map((student) => {
+  //         const reportScore = reportScores.find(
+  //           (report) => report.user_id === student.user_id
+  //         );
+  //         const finalScore = finalScores.find(
+  //           (score) => score.user_id === student.user_id
+  //         );
+
+  //         return {
+  //           ...student,
+  //           total_report_score: reportScore?.total_report_score ?? 0,
+  //           health_score: finalScore?.health_score ?? 0,
+  //           interview_score: finalScore?.interview_score ?? 0,
+  //           average_final_score: finalScore?.average_final_score ?? 0,
+  //           id: student.user_id,
+  //         };
+  //       });
+
+  //       setData(combinedData);
+  //       setFilteredData(combinedData);
+  //       setIsPending(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setIsError(true);
+  //       setIsPending(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:3000/api/v1/studentData"
   //       );
-  //       console.log("Final scoree ", finalScore);
-  //       return {
-  //         ...student,
-  //         total_report_score: reportScore?.total_report_score ?? 0,
-  //         health_score: finalScore?.health_score ?? 0,
-  //         interview_score: finalScore?.interview_score ?? 0,
-  //         average_final_score: finalScore?.average_final_score ?? 0,
-  //         id: student.user_id,
-  //       };
-  //     });
+  //       const studentData = response.data.data?.allStudentData ?? [];
+  //       const reportScores = response.data.data?.allReportScore ?? [];
+  //       const finalScores = response.data.data?.allFinalScore ?? [];
 
-  //     setData(combinedData); // Update state with combined data
-  //     console.log("Combined Data:", combinedData);
-  //     setIsPending(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setIsError(true);
-  //     setIsPending(false);
-  //   }
-  // };
+  //       const combinedData = studentData.map((student) => {
+  //         const reportScore = reportScores.find(
+  //           (report) => report.user_id === student.user_id
+  //         );
+  //         const finalScore = finalScores.find(
+  //           (score) => score.user_id === student.user_id
+  //         );
 
-  // const fetchData = async () => {
-  //   try {
-  //     // Fetch final scores
-  //     const resScore = await axios.get(
-  //       "http://localhost:3000/api/v1/finalScore"
-  //     );
-  //     const finalScores = resScore.data?.data ?? [];
-  //     console.log("API Response:", resScore.data);
+  //         return {
+  //           ...student,
+  //           total_report_score: reportScore?.total_report_score ?? 0,
+  //           health_score: finalScore?.health_score ?? 0,
+  //           interview_score: finalScore?.interview_score ?? 0,
+  //           average_final_score: finalScore?.average_final_score ?? 0,
+  //           id: student.user_id,
+  //         };
+  //       });
 
-  //     // Fetch student data
-  //     const response = await axios.get(
-  //       "http://localhost:3000/api/v1/studentData"
-  //     );
-  //     const studentData = response.data.data?.allStudentData ?? [];
-  //     const reportScores = response.data.data?.allReportScore ?? [];
-  //     console.log("Report Scoree", reportScores);
+  //       setData(combinedData);
+  //       setFilteredData(combinedData);
+  //       setIsPending(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setIsError(true);
+  //       setIsPending(false);
+  //     }
+  //   };
 
-  //     console.log("API Response:", response.data);
-
-  //     // Combine student data with report scores and final scores
-  //     const combinedData = studentData.map((student) => {
-  //       const reportScore = reportScores.find(
-  //         (report) => report.user_id === student.user_id
-  //       );
-  //       const finalScore = finalScores.find(
-  //         (score) => score.user_id === student.user_id
-  //       );
-
-  //       // Calculate average_final_score based on backend logic
-  //       const totalReportScore = reportScore?.total_report_score ?? 0;
-  //       const healthScore = finalScore?.health_score ?? 0;
-  //       const interviewScore = finalScore?.interview_score ?? 0;
-  //       const averageFinalScore =
-  //         (healthScore + interviewScore + totalReportScore) / 2;
-
-  //       console.log("Final scoree ", finalScore);
-
-  //       return {
-  //         ...student,
-  //         total_report_score: totalReportScore,
-  //         health_score: healthScore,
-  //         interview_score: interviewScore,
-  //         average_final_score: averageFinalScore, // Calculate here
-  //         id: student.user_id,
-  //       };
-  //     });
-
-  //     setData(combinedData); // Update state with combined data
-  //     console.log("Combined Data:", combinedData);
-  //     setIsPending(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setIsError(true);
-  //     setIsPending(false);
-  //   }
-  // };
-
-  // const fetchData = async () => {
-  //   try {
-  //     // Fetch final scores
-  //     const resScore = await axios.get(
-  //       "http://localhost:3000/api/v1/finalScore"
-  //     );
-  //     const finalScores = resScore.data?.data ?? [];
-  //     console.log("Final Scores:", finalScores);
-
-  //     // Fetch student data
-  //     const response = await axios.get(
-  //       "http://localhost:3000/api/v1/studentData"
-  //     );
-  //     const studentData = response.data.data?.allStudentData ?? [];
-  //     const reportScores = response.data.data?.allReportScore ?? [];
-  //     console.log("Student Data:", studentData);
-  //     console.log("Report Scores:", reportScores);
-
-  //     // Combine student data with report scores and final scores
-  //     const combinedData = studentData.map((student) => {
-  //       const reportScore = reportScores.find(
-  //         (report) => report.user_id === student.user_id
-  //       );
-  //       const finalScore = finalScores.find(
-  //         (score) => score.user_id === student.user_id
-  //       );
-
-  //       // Log all values used in the calculation
-  //       const totalReportScore = reportScore?.total_report_score ?? 0;
-  //       const healthScore = finalScore?.health_score ?? 0;
-  //       const interviewScore = finalScore?.interview_score ?? 0;
-  //       const average_final_score =
-  //         (healthScore + interviewScore + totalReportScore) / 2;
-
-  //       console.log("Report Score:", reportScore);
-  //       console.log("Final Score:", finalScore);
-  //       // console.log("Calculated Average Final Score:", averageFinalScore);
-
-  //       return {
-  //         ...student,
-  //         total_report_score: totalReportScore,
-  //         health_score: healthScore,
-  //         interview_score: interviewScore,
-  //         average_final_score: average_final_score,
-  //         id: student.user_id,
-  //       };
-  //     });
-
-  //     setData(combinedData); // Update state with combined data
-  //     console.log("Combined Data:", combinedData);
-  //     setIsPending(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setIsError(true);
-  //     setIsPending(false);
-  //   }
-  // };
+  //   fetchData();
+  // }, []);
 
   const fetchData = async () => {
     try {
-      // Fetch final scores
-      const resScore = await axios.get(
-        "http://localhost:3000/api/v1/finalScore"
-      );
-      const finalScores = resScore.data?.data ?? [];
-      console.log("Final Scores API Response:", resScore.data);
-
-      // Fetch student data
       const response = await axios.get(
         "http://localhost:3000/api/v1/studentData"
       );
       const studentData = response.data.data?.allStudentData ?? [];
       const reportScores = response.data.data?.allReportScore ?? [];
+      const finalScores = response.data.data?.allFinalScore ?? [];
 
-      console.log("Student Data API Response:", response.data);
       const combinedData = studentData.map((student) => {
         const reportScore = reportScores.find(
           (report) => report.user_id === student.user_id
@@ -279,41 +207,57 @@ export default function ScoresPage() {
           (score) => score.user_id === student.user_id
         );
 
-        const total_report_score = reportScore?.total_report_score ?? 0;
-        const health_score = finalScore?.health_score ?? 0;
-        const interview_score = finalScore?.interview_score ?? 0;
-        const average_final_score = finalScore?.average_final_score ?? 0;
-
-        // Log the scores
-        console.log(`Student ID: ${student.user_id}`);
-        console.log(`Total Report Score: ${total_report_score}`);
-        console.log(`Health Score: ${health_score}`);
-        console.log(`Interview Score: ${interview_score}`);
-        console.log(`Average Final Score: ${average_final_score}`);
-
         return {
           ...student,
-          total_report_score,
-          health_score,
-          interview_score,
-          average_final_score,
+          total_report_score: reportScore?.total_report_score ?? 0,
+          health_score: finalScore?.health_score ?? 0,
+          interview_score: finalScore?.interview_score ?? 0,
+          average_final_score: finalScore?.average_final_score ?? 0,
+          major_result: finalScore?.major_result ?? 0,
+          result_description: finalScore?.result_description ?? 0,
           id: student.user_id,
         };
       });
 
-      setData(combinedData); // Update state with combined data
-      console.log("Combined Data:", combinedData);
-      setIsPending(false);
+      const sortedData = combinedData.sort(
+        (a, b) => b.average_final_score - a.average_final_score
+      );
+
+      // Assign ranks based on sorted data
+      const rankedData = sortedData.map((item, index) => ({
+        ...item,
+        Hasil: index + 1, // Assign rank starting from 1
+      }));
+
+      setData(rankedData); // Update state with ranked data
+      setFilteredData(rankedData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error saat mengambil data:", error);
       setIsError(true);
-      setIsPending(false);
+    } finally {
+      setIsPending(false); // Pastikan status pending diperbarui terlepas dari berhasil atau gagal
     }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const filteredItems = data.filter(
+      (item) =>
+        item.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(item.major_result)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+    );
+
+    setFilteredData(filteredItems);
+  }, [searchTerm, data]);
+
+  const handleInputSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const handleUpdateData = async (data) => {
     if (!data || !data.id) {
@@ -347,16 +291,17 @@ export default function ScoresPage() {
       setLoading(false);
     }
   };
-
   return (
     <>
       <ScoresContainer
         className={"border"}
         thead={theadAllScores}
         setAddModal={setAddModal}
+        searchTerm={searchTerm}
+        handleInputSearch={handleInputSearch}
       >
         <RowTable
-          data={data}
+          data={filteredData}
           ifEmpty={"Tidak ada daftar nilai"}
           totalRow={5}
           totalCol={10}
@@ -374,6 +319,11 @@ export default function ScoresPage() {
                 <td>{data?.health_score}</td>
                 <td>{data?.interview_score}</td>
                 <td>{data?.average_final_score}</td>
+                <td>{data?.Hasil}</td>
+                <td>{data?.major_result}</td>
+                <td>{data?.result_description}</td>
+
+                <td></td>
               </tr>
             );
           }}
@@ -403,7 +353,6 @@ export default function ScoresPage() {
     </>
   );
 }
-
 const ScoresModal = ({
   title,
   data,
@@ -418,22 +367,35 @@ const ScoresModal = ({
     id: data?.id ?? "",
     health_score: data?.health_score ?? "",
     interview_score: data?.interview_score ?? "",
+    major_result: data?.major_result ?? "",
+    result_description: data?.result_description ?? "",
   };
   const errorState = {
     health_score: "",
     interview_score: "",
+    major_result: "",
+    result_description: "",
   };
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
-  const { form, setForm, handleInput, handleChange, errors, setErrors } =
-    useForm(initState, errorState);
+  const { form, setForm, handleChange, errors, setErrors } = useForm(
+    initState,
+    errorState
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateScoreForm(form, setErrors)) {
       handleAction(form);
     }
+  };
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value, // Menjaga nilai total_report_score tetap ada
+    }));
   };
 
   useEffect(() => {
@@ -453,7 +415,7 @@ const ScoresModal = ({
           <CustomModal
             title={"Hapus Kriteria?"}
             content={
-              "Apabila anda menghapus Criteria, data keseluruhan criteria akan hilang"
+              "Apabila anda menghapus nilai, data keseluruhan nilai akan hilang"
             }
             confirmAction={handleDeleteAction}
             cancelAction={() => setDeleteConfirm(false)}
@@ -492,7 +454,7 @@ const ScoresModal = ({
                     htmlFor="health_score"
                     className="col-sm-3 col-form-label "
                   >
-                    Nilai Kesehatan
+                    Kesehatan
                   </label>
                   <div className="col-sm-9">
                     <input
@@ -513,12 +475,70 @@ const ScoresModal = ({
                     Nilai Interview
                   </label>
                   <div className="col-sm-9">
-                    <input
+                    <Input
                       type="number"
                       className="form-control"
                       id="interview_score"
                       name="interview_score"
                       value={form.interview_score}
+                      onChange={handleInput}
+                    />
+                  </div>
+                </div>
+                <div className="row mb-3">
+                  <label
+                    htmlFor="student_gender"
+                    className="col col-form-label"
+                  >
+                    Bidang Keahlian
+                  </label>
+                  <div className="col-sm-9">
+                    <select
+                      className="form-select"
+                      aria-label="Default select example"
+                      id="major_result"
+                      name="major_result"
+                      value={form.major_result} // Menyinkronkan nilai select dengan formData
+                      onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                    >
+                      <option value="">Pilihan pertama</option>
+                      {/* Opsi default untuk mendorong pilihan */}
+                      <option value="Teknik Kendaraan">Teknik Kendaraan</option>
+                      <option value="Teknik Elektronika">
+                        Teknik Elektronika
+                      </option>
+                      <option value="Teknik Ketenagalistrikan">
+                        Teknik Ketenagalistrikan
+                      </option>
+                      <option value="Teknik Komputer Dan Jaringan">
+                        Teknik Komputer Dan Jaringan
+                      </option>
+                      <option value="Teknik Sepeda Motor">
+                        Teknik Sepeda Motor
+                      </option>
+                      <option value="Desain Permodelan Dan Informasi Bangunan">
+                        Desain Permodelan Dan Informasi Bangunan
+                      </option>
+                      <option value="Teknologi Farmasi">
+                        Teknologi Farmasi
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div className="mb-3 row">
+                  <label
+                    htmlFor="result_description"
+                    className="col-sm-3 col-form-label"
+                  >
+                    Deskripsi
+                  </label>
+                  <div className="col-sm-9">
+                    <Input
+                      type="text"
+                      className="form-control"
+                      id="result_description"
+                      name="result_description"
+                      value={form.result_description}
                       onChange={handleInput}
                     />
                   </div>
@@ -534,7 +554,7 @@ const ScoresModal = ({
                   style={{ width: "7.125rem" }}
                   className={"btn-primary text-white fw-semibold"}
                 >
-                  {loading ? <SpinnerSM /> : "Simpan"}
+                  {loading ? <Spinner /> : "Simpan"}
                 </Button>
                 {forModal === "post" ? null : (
                   <Button

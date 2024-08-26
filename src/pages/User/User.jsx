@@ -11,6 +11,9 @@ export default function User() {
   const [isPending, setIsPending] = useState(false);
   const [isError, setIsError] = useState(false);
 
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [data, setData] = useState([]);
   const fetchData = async () => {
     try {
@@ -24,16 +27,31 @@ export default function User() {
       );
       const studentData = response.data.data?.allStudentData ?? [];
       const reportScores = response.data.data?.allReportScore ?? [];
+      const finalScores = response.data.data?.allFinalScore ?? [];
+      console.log("Student Data", studentData);
+      console.log("ReportScore", reportScores);
+      console.log("FINALLLLL", finalScores);
 
       const combinedData = studentData.map((student) => {
+        // Cari report berdasarkan user_id
         const report = reportScores.find(
-          (score) => score.user_id === student.id
+          (score) => String(score.user_id) === String(student.user_id)
         );
-        return { ...student, report };
-      });
+        const finalScore = finalScores.find(
+          (score) => score.user_id === student.user_id
+        );
 
+        // Debugging untuk melihat hasil pencarian
+        console.log("User ID:", student.user_id);
+        console.log("Matching Report:", report);
+        console.log("Matching FinalScore:", finalScore);
+
+        // Gabungkan data student dengan report yang ditemukan
+        return { ...student, report, finalScore };
+      });
       console.log("Combined Data:", combinedData); // Cek data gabungan
       setData(combinedData);
+      setFilteredData(combinedData);
 
       setIsPending(false);
     } catch (error) {
@@ -42,9 +60,21 @@ export default function User() {
       setIsPending(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const filteredItems = data.filter((item) =>
+      item.student_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filteredItems);
+  }, [searchTerm, data]);
+
+  const handleInputSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const onNavigate = (userData, offset) => {
     navigate(`/users/detailUser/${userData.id}`, {
@@ -58,12 +88,14 @@ export default function User() {
         pageFor={"user"}
         className={"border"}
         maxHeight={"45rem"}
+        searchTerm={searchTerm}
+        handleInputSearch={handleInputSearch}
       >
         <RowTable
           isError={isError}
           isPending={isPending}
           ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
-          data={data}
+          data={filteredData}
           totalRow={3}
           totalCol={8}
           renderItem={(data, index) => {
@@ -73,10 +105,11 @@ export default function User() {
                 className="text-nowrap cursor-pointer"
                 key={index}
               >
-                <td>{data?.user_id}</td>
+                {/* <td>{data?.user_id}</td> */}
+                <td>{index + 1}</td>
+                <td>{data?.nisn}</td>
                 <td>{data?.student_name}</td>
                 <td>{data?.student_gender}</td>
-                <td>{data?.nisn}</td>
               </tr>
             );
           }}

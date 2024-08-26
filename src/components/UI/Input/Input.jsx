@@ -17,6 +17,7 @@ export const Input = (props) => {
       className={className}
       name={name}
       value={value}
+      placeholder={placeholder}
       maxLength={maxLength}
       accept={accept}
       required={isRequired}

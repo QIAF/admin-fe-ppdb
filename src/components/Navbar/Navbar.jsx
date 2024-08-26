@@ -37,8 +37,8 @@ const UserProfile = () => {
   useEffect(() => {
     setTimeout(() => {
       setUserData({
-        avatar: "assetsimagesIconProfile.svg",
-        name: "Admin SMK",
+        // avatar: "assetsimagesIconProfile.svg",
+        // name: "Admin SMK",
         // role: "Admin",
       });
       setLoading(false);

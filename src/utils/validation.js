@@ -1,25 +1,42 @@
 export const loginData = (form) => {
   const formLogin = {
-    email: form.email,
+    user_number: form.user_number,
     password: form.password,
   };
   return formLogin;
 };
 
+// export const validateLogin = (form, setError) => {
+//   let valid = true;
+//   const emailRegex = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+//   const newErrors = {
+//     email: "",
+//     password: "",
+//   };
+//   if (!form.email) {
+//     newErrors.email = "Email wajib diisi";
+//     valid = false;
+//   } else if (!emailRegex(form.email)) {
+//     newErrors.email = "Masukkan email yang valid";
+//   }
+
+//   if (!form.password) {
+//     newErrors.password = "Password wajib diisi";
+//     valid = false;
+//   }
+//   setError(newErrors);
+//   return valid;
+// };
 export const validateLogin = (form, setError) => {
   let valid = true;
-  const emailRegex = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   const newErrors = {
-    email: "",
+    user_number: "",
     password: "",
   };
-  if (!form.email) {
-    newErrors.email = "Email wajib diisi";
+  if (!form.user_number) {
+    newErrors.user_number = "Email wajib diisi";
     valid = false;
-  } else if (!emailRegex(form.email)) {
-    newErrors.email = "Masukkan email yang valid";
   }
-
   if (!form.password) {
     newErrors.password = "Password wajib diisi";
     valid = false;
@@ -27,7 +44,6 @@ export const validateLogin = (form, setError) => {
   setError(newErrors);
   return valid;
 };
-
 
 export const validateStudentData = (form, setErrors) => {
   let valid = true;
@@ -108,7 +124,6 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-
 export const dataStudent = (form) => {
   const formData = {
   
@@ -175,6 +190,8 @@ export const dataStudent = (form) => {
     english3: form.english3,
     english4: form.english4,
     english5: form.english5,
+
+
   };
    return formData;
 };
@@ -188,6 +205,12 @@ export const validateScoreIsChanges = (form, data) => {
   if (form?.interview_score !== data?.interview_score) {
     valid = true;
   }
+  if (form?.major_result !== data?.major_result) {
+    valid = true;
+  }
+  if (form?.result_description !== data?.result_description) {
+    valid = true;
+  }
 
   return valid;
 };
@@ -197,6 +220,8 @@ export const validateScoreForm = (form, setErrors) => {
   const newErrors = {
     health_score: "",
     interview_score: "",
+    major_result: "",
+    result_description: "",
   };
 
   if (!form.health_score) {
@@ -214,6 +239,15 @@ export const validateScoreForm = (form, setErrors) => {
     newErrors.interview_score = "Nilai Interview harus berupa angka!";
     valid = false;
   }
+  if (!form.major_result) {
+    newErrors.major_result = "Nilai Interview wajib diisi!";
+    valid = false;
+  }
+  if (!form.result_description) {
+    newErrors.result_description = "Nilai Interview wajib diisi!";
+    valid = false;
+  }
+
 
   setErrors(newErrors);
   return valid;
@@ -223,6 +257,8 @@ export const dataScore = (form) => {
     user_id: form.id,
     health_score: form.health_score,
     interview_score: form.interview_score,
+    major_result: form.major_result,
+    result_description: form.result_description
   };
   return formData;
 };
@@ -260,7 +296,7 @@ export const validateMajor = (form, setErrors) => {
    setErrors(newErrors);
   return valid;
 
-}
+};
 
 export const validateMajorIsChanges = (form, data) => {
   let valid = false;
@@ -276,4 +312,4 @@ export const validateMajorIsChanges = (form, data) => {
   }
 
   return valid;
-}
+};
