@@ -48,6 +48,7 @@ export default function UserPage() {
             <tr className="text-nowrap cursor-pointer" key={data?.id}>
               {/* <td>{data?.id}</td> */}
               {/* <td>{data?.user_id}</td> */}
+              <td>{index + 1}</td>
               <td>{data?.nisn}</td>
               <td>{data?.student_name}</td>
               <td>{data?.student_gender}</td>

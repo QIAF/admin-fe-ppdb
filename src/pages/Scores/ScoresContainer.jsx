@@ -13,35 +13,25 @@ export default function ScoresContainer({
   className,
   maxHeight,
   onNameClick,
+  title,
 }) {
   return (
     <div className={`rounded-4 p-4 ${className} mt-4`}>
-      {pageFor === "homepage" ? (
-        <div className="d-flex flex-row justify-content-between align-items-center mb-4">
-          <h3 className="card-title text-nowrap fs-2 fw-semibold">
-            Daftar Nilai
-          </h3>
-          <Link
-            to={"/scores"}
-            className=" text-decoration-none text-nowrap fw-semibold"
-          >
-            Lihat Semua
-          </Link>
+      <div className="d-flex flex-row justify-content-between align-items-center mb-5">
+        <h3 className="card-title text-nowrap fs-5 fw-semibold">
+          Rekapitulasi hasil seleksi
+        </h3>
+        <div className="position-relative mt-3 mt-md-0">
+          <Input
+            name={name}
+            onChange={(e) => handleInputSearch(e)}
+            value={searchTerm}
+            type={"text"}
+            placeholder="Cari nama siswa..."
+            className={"rounded-4 ps-5 border-2 bg-green py-1"}
+          />
         </div>
-      ) : (
-        <div className="d-flex flex-column flex-md-row gap-3 gap-md-0 justify-content-end align-items-md-center mb-4">
-          <div className="position-relative mt-3 mt-md-0">
-            <Input
-              name={name}
-              onChange={(e) => handleInputSearch(e)}
-              value={searchTerm}
-              type={"text"}
-              placeholder="Cari nama siswa..."
-              className={"rounded-4 ps-5 border-2 bg-green py-1"}
-            />
-          </div>
-        </div>
-      )}
+      </div>
 
       <div
         className="table-wrapper"

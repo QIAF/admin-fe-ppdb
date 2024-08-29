@@ -66,9 +66,6 @@ export default function Sidebar() {
             <CustomModal
               icon={Logoutlg}
               title={"Keluar?"}
-              // content={
-              //   "Ingin beristirahat sejenak? keluar dan nikmati waktu Anda."
-              // }
               confirmAction={handleLogout}
               cancelAction={() => setModal(false)}
             />

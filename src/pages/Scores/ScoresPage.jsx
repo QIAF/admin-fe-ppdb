@@ -46,150 +46,13 @@ export default function ScoresPage() {
       // user_id: data.user_id, // Ensure these fields are correctly set
       health_score: data.health_score,
       interview_score: data.interview_score,
+      final_result: data.final_result,
       major_result: data.major_result,
       result_description: data.result_description,
       id: data.id,
     });
     setEditModal(true);
   };
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "http://localhost:3000/api/v1/studentData"
-  //     );
-
-  //     const studentData = response.data.data?.allStudentData ?? [];
-  //     const reportScores = response.data.data?.allReportScore ?? [];
-  //     const finalScores = response.data.data?.allFinalScore ?? [];
-  //     console.log("Final Scoree Manaaa", finalScores);
-
-  //     console.log("Student Data API Response:", response.data);
-  //     const combinedData = studentData.map((student) => {
-  //       const reportScore = reportScores.find(
-  //         (report) => report.user_id === student.user_id
-  //       );
-  //       const finalScore = finalScores.find(
-  //         (score) => score.user_id === student.user_id
-  //       );
-  //       console.log("finalll ada ga", finalScore);
-  //       const total_report_score = reportScore?.total_report_score ?? 0;
-  //       const health_score = finalScore?.health_score ?? 0;
-  //       const interview_score = finalScore?.interview_score ?? 0;
-  //       const average_final_score = finalScore?.average_final_score ?? 0;
-
-  //       // Log the scores
-  //       console.log(`Student ID: ${student.user_id}`);
-  //       console.log(`Total Report Score: ${total_report_score}`);
-  //       console.log(`Health Score: ${health_score}`);
-  //       console.log(`Interview Score: ${interview_score}`);
-  //       console.log(`Average Final Score: ${average_final_score}`);
-
-  //       return {
-  //         ...student,
-  //         total_report_score,
-  //         health_score,
-  //         interview_score,
-  //         average_final_score,
-  //         id: student.user_id,
-  //       };
-  //     });
-
-  //     setData(combinedData); // Update state with combined data
-  //     console.log("Combined Data:", combinedData);
-  //     setFilteredData(combinedData);
-  //     setIsPending(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setIsError(true);
-  //     setIsPending(false);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "http://localhost:3000/api/v1/studentData"
-  //       );
-  //       const studentData = response.data.data?.allStudentData ?? [];
-  //       const reportScores = response.data.data?.allReportScore ?? [];
-  //       const finalScores = response.data.data?.allFinalScore ?? [];
-
-  //       const combinedData = studentData.map((student) => {
-  //         const reportScore = reportScores.find(
-  //           (report) => report.user_id === student.user_id
-  //         );
-  //         const finalScore = finalScores.find(
-  //           (score) => score.user_id === student.user_id
-  //         );
-
-  //         return {
-  //           ...student,
-  //           total_report_score: reportScore?.total_report_score ?? 0,
-  //           health_score: finalScore?.health_score ?? 0,
-  //           interview_score: finalScore?.interview_score ?? 0,
-  //           average_final_score: finalScore?.average_final_score ?? 0,
-  //           id: student.user_id,
-  //         };
-  //       });
-
-  //       setData(combinedData);
-  //       setFilteredData(combinedData);
-  //       setIsPending(false);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setIsError(true);
-  //       setIsPending(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "http://localhost:3000/api/v1/studentData"
-  //       );
-  //       const studentData = response.data.data?.allStudentData ?? [];
-  //       const reportScores = response.data.data?.allReportScore ?? [];
-  //       const finalScores = response.data.data?.allFinalScore ?? [];
-
-  //       const combinedData = studentData.map((student) => {
-  //         const reportScore = reportScores.find(
-  //           (report) => report.user_id === student.user_id
-  //         );
-  //         const finalScore = finalScores.find(
-  //           (score) => score.user_id === student.user_id
-  //         );
-
-  //         return {
-  //           ...student,
-  //           total_report_score: reportScore?.total_report_score ?? 0,
-  //           health_score: finalScore?.health_score ?? 0,
-  //           interview_score: finalScore?.interview_score ?? 0,
-  //           average_final_score: finalScore?.average_final_score ?? 0,
-  //           id: student.user_id,
-  //         };
-  //       });
-
-  //       setData(combinedData);
-  //       setFilteredData(combinedData);
-  //       setIsPending(false);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setIsError(true);
-  //       setIsPending(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -213,6 +76,7 @@ export default function ScoresPage() {
           health_score: finalScore?.health_score ?? 0,
           interview_score: finalScore?.interview_score ?? 0,
           average_final_score: finalScore?.average_final_score ?? 0,
+          final_result: finalScore?.final_result ?? 0,
           major_result: finalScore?.major_result ?? 0,
           result_description: finalScore?.result_description ?? 0,
           id: student.user_id,
@@ -314,12 +178,13 @@ export default function ScoresPage() {
                 className="text-nowrap cursor-pointer"
                 key={data?.id}
               >
+                <td>{data?.Hasil}</td>
                 <td>{data?.student_name}</td>
                 <td>{data?.total_report_score}</td>
                 <td>{data?.health_score}</td>
                 <td>{data?.interview_score}</td>
                 <td>{data?.average_final_score}</td>
-                <td>{data?.Hasil}</td>
+                <td>{data?.final_result}</td>
                 <td>{data?.major_result}</td>
                 <td>{data?.result_description}</td>
 
@@ -367,14 +232,16 @@ const ScoresModal = ({
     id: data?.id ?? "",
     health_score: data?.health_score ?? "",
     interview_score: data?.interview_score ?? "",
+    final_result: data?.final_result ?? "",
     major_result: data?.major_result ?? "",
     result_description: data?.result_description ?? "",
   };
   const errorState = {
     health_score: "",
     interview_score: "",
+    final_result: "",
     major_result: "",
-    result_description: "",
+    // result_description: "",
   };
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -454,7 +321,7 @@ const ScoresModal = ({
                     htmlFor="health_score"
                     className="col-sm-3 col-form-label "
                   >
-                    Kesehatan
+                    Nilai Kesehatan
                   </label>
                   <div className="col-sm-9">
                     <input
@@ -489,6 +356,30 @@ const ScoresModal = ({
                   <label
                     htmlFor="student_gender"
                     className="col col-form-label"
+                    placeholder="fghjk"
+                  >
+                    Hasil akhir
+                  </label>
+                  <div className="col-sm-9">
+                    <select
+                      className="form-select"
+                      aria-label="Default select example"
+                      id="final_result"
+                      name="final_result"
+                      value={form.final_result} // Menyinkronkan nilai select dengan formData
+                      onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                    >
+                      <option value="">Pilih Hasil</option>
+                      <option value="Tidak diterima">Tidak Diterima</option>
+                      <option value="Diterima">Diterima</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="row mb-3">
+                  <label
+                    htmlFor="student_gender"
+                    className="col col-form-label"
+                    placeholder="fghjk"
                   >
                     Bidang Keahlian
                   </label>
@@ -502,7 +393,7 @@ const ScoresModal = ({
                       onChange={handleInput} // Memperbarui formData saat pilihan berubah
                     >
                       <option value="">Pilihan pertama</option>
-                      {/* Opsi default untuk mendorong pilihan */}
+                      <option value="-">-</option>
                       <option value="Teknik Kendaraan">Teknik Kendaraan</option>
                       <option value="Teknik Elektronika">
                         Teknik Elektronika

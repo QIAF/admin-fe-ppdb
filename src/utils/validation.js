@@ -126,7 +126,6 @@ const formatDate = (date) => {
 
 export const dataStudent = (form) => {
   const formData = {
-  
     student_name: form.student_name,
     family_card_number: form.family_card_number,
     student_gender: form.student_gender,
@@ -205,12 +204,19 @@ export const validateScoreIsChanges = (form, data) => {
   if (form?.interview_score !== data?.interview_score) {
     valid = true;
   }
+  if (form?.health_score > 50 || form?.interview_score > 50) {
+    valid = false; // Tidak valid jika nilai lebih dari 50
+    alert(' Nilai maksimal untuk nilai kesehatan dan wawancara adalah 50.');
+  }
+  if (form?.final_result !== data?.final_result) {
+    valid = true;
+  }
   if (form?.major_result !== data?.major_result) {
     valid = true;
   }
-  if (form?.result_description !== data?.result_description) {
-    valid = true;
-  }
+  // if (form?.result_description !== data?.result_description) {
+  //   valid = true;
+  // }
 
   return valid;
 };
@@ -220,6 +226,7 @@ export const validateScoreForm = (form, setErrors) => {
   const newErrors = {
     health_score: "",
     interview_score: "",
+    final_result: "",
     major_result: "",
     result_description: "",
   };
@@ -237,6 +244,10 @@ export const validateScoreForm = (form, setErrors) => {
     valid = false;
   } else if (!isNumber(form.interview_score)) {
     newErrors.interview_score = "Nilai Interview harus berupa angka!";
+    valid = false;
+  }
+  if (!form.final_result) {
+    newErrors.final_result = "Nilai Interview wajib diisi!";
     valid = false;
   }
   if (!form.major_result) {
@@ -257,6 +268,7 @@ export const dataScore = (form) => {
     user_id: form.id,
     health_score: form.health_score,
     interview_score: form.interview_score,
+    final_result: form.final_result,
     major_result: form.major_result,
     result_description: form.result_description
   };

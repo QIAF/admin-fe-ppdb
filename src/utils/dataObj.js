@@ -13,16 +13,22 @@ export const sides = [
     link: '/dashboard'
   },
   {
+    icon: UserIcon,
+    icon2: UserIconWh,
+    label: 'Data Siswa',
+    link: '/users'
+  },
+  {
     icon: KriteriaIcon,
     icon2: KriteriaIconWh,
     label: 'Data Nilai',
     link: '/scores'
   },
   {
-    icon: UserIcon,
-    icon2: UserIconWh,
-    label: 'Data Siswa',
-    link: '/users'
+    icon: KriteriaIcon,
+    icon2: KriteriaIconWh,
+    label: 'Hasil Akhir',
+    link: '/finalResults'
   },
   {
     icon: UserIcon,
@@ -38,13 +44,17 @@ export const navTitle = [
       title: 'Dashboard',
     },
     {
-    //   route: 'criteria',
-      title: 'Data Nilai',
+      route: 'scores',
+      // title: 'Rekapitulasi hasil seleksi',
     },
 
     {
       route: 'users',
       title: 'Data Calon Siswa',
+    },
+    {
+      route: 'finalResults',
+      title: 'Hasil Seleksi Akhir',
     },
     {
       route: 'majors',
@@ -53,6 +63,7 @@ export const navTitle = [
   ]
 
 export const thead = ["No","NISN","Nama Siswa", "Jenis Kelamin"];
+export const theadStudentPassed = ["NISN","Nama Siswa", "Hasil", "Bidang keahlian"];
 export const theadScores = ["User ID","Nama Siswa", "Nilai Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil"];
-export const theadAllScores = ["Nama Siswa", "Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil", "Rank", "Bidang Keahlian", "Deskripsi"];
+export const theadAllScores = ["Rank","Nama Siswa", "Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil", "Hasil Akhir", "Bidang Keahlian", "Deskripsi"];
 export const theadAllMajors = ["Nama Bidang", "Deskripsi", "Gambar"];

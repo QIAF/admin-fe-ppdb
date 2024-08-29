@@ -10,6 +10,7 @@ import { Route, Routes } from "react-router";
 import Layout from "../../Layout";
 import User from "../pages/User/User";
 import PrivateRoute from "./PrivateRoute";
+import ResultPage from "../pages/Result/ResultPage";
 
 export default function RoutesPage() {
   return (
@@ -23,6 +24,7 @@ export default function RoutesPage() {
             <Route path="/users/detailUser/:id" element={<DetailUser />} />
             <Route path="/users/updateUser/:id" element={<UpdateUser />} />
             <Route path="/scores" element={<ScoresPage />} />
+            <Route path="/finalResults" element={<ResultPage />} />
             <Route path="/majors" element={<MajorsPage />} />
           </Route>
         </Route>
