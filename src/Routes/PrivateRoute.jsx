@@ -2,10 +2,9 @@ import React from "react";
 import { Navigate, Outlet } from "react-router";
 
 export default function PrivateRoute() {
-  const user = localStorage.getItem("token");
-  // menyimpan token jwt
+  const token = localStorage.getItem("token");
 
-  if (!user) {
+  if (!token) {
     return <Navigate to="/" />;
   } else {
     return <Outlet />;

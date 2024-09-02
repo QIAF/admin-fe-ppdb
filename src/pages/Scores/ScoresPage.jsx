@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "../../components/Loader/Spinner";
 import { Input } from "../../components/UI/Input/Input";
+import { ErrMsg } from "../../components/Error/ErrMsg";
 
 export default function ScoresPage() {
   const [editedData, setEditedData] = useState(null);
@@ -64,11 +65,9 @@ export default function ScoresPage() {
 
       const combinedData = studentData.map((student) => {
         const reportScore = reportScores.find(
-          (report) => report.user_id === student.user_id
+          (report) => report.id === student.id
         );
-        const finalScore = finalScores.find(
-          (score) => score.user_id === student.user_id
-        );
+        const finalScore = finalScores.find((score) => score.id === student.id);
 
         return {
           ...student,
@@ -79,7 +78,7 @@ export default function ScoresPage() {
           final_result: finalScore?.final_result ?? 0,
           major_result: finalScore?.major_result ?? 0,
           result_description: finalScore?.result_description ?? 0,
-          id: student.user_id,
+          id: student.id,
         };
       });
 
@@ -239,8 +238,8 @@ const ScoresModal = ({
   const errorState = {
     health_score: "",
     interview_score: "",
-    final_result: "",
-    major_result: "",
+    // final_result: "",
+    // major_result: "",
     // result_description: "",
   };
   const [isFormChanged, setIsFormChanged] = useState(false);
@@ -270,26 +269,8 @@ const ScoresModal = ({
     setIsFormChanged(isChanged);
   }, [form, data]);
 
-  const handleDeleteAction = () => {
-    handleDelete(data?.id, offset);
-    setDeleteConfirm(false);
-  };
-
   return (
     <>
-      {deleteConfirm && (
-        <Tranparent disabled={true} style={{ zIndex: 55 }}>
-          <CustomModal
-            title={"Hapus Kriteria?"}
-            content={
-              "Apabila anda menghapus nilai, data keseluruhan nilai akan hilang"
-            }
-            confirmAction={handleDeleteAction}
-            cancelAction={() => setDeleteConfirm(false)}
-          />
-        </Tranparent>
-      )}
-
       <div
         className="modal-backdrop"
         style={{
@@ -332,6 +313,7 @@ const ScoresModal = ({
                       value={form.health_score}
                       onChange={handleInput}
                     />
+                    <ErrMsg msg={errors.health_score} />
                   </div>
                 </div>
                 <div className="mb-3 row">
@@ -350,6 +332,7 @@ const ScoresModal = ({
                       value={form.interview_score}
                       onChange={handleInput}
                     />
+                    <ErrMsg msg={errors.interview_score} />
                   </div>
                 </div>
                 <div className="row mb-3">
@@ -389,8 +372,8 @@ const ScoresModal = ({
                       aria-label="Default select example"
                       id="major_result"
                       name="major_result"
-                      value={form.major_result} // Menyinkronkan nilai select dengan formData
-                      onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                      value={form.major_result}
+                      onChange={handleInput}
                     >
                       <option value="">Pilihan pertama</option>
                       <option value="-">-</option>
@@ -432,13 +415,14 @@ const ScoresModal = ({
                       value={form.result_description}
                       onChange={handleInput}
                     />
+                    <ErrMsg msg={errors.result_description} />
                   </div>
                 </div>
               </form>
             </div>
 
             <div className="modal-footer">
-              <div className="d-flex flex-row gap-3 justify-content-start w-100 align-items-center">
+              <div className="d-flex flex-row gap-3 justify-content-center w-100 align-items-center">
                 <Button
                   disabled={!isFormChanged || loading}
                   onClick={handleSubmit}
@@ -447,15 +431,6 @@ const ScoresModal = ({
                 >
                   {loading ? <Spinner /> : "Simpan"}
                 </Button>
-                {forModal === "post" ? null : (
-                  <Button
-                    type="button"
-                    onClick={() => setDeleteConfirm(true)}
-                    className="btn-outline-primary fw-semibold border-2 text-nowrap"
-                  >
-                    Hapus
-                  </Button>
-                )}
               </div>
             </div>
           </div>

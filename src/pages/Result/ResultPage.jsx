@@ -22,15 +22,13 @@ export default function ResultPage() {
 
       // Gabungkan data siswa dengan skor akhir
       const combinedData = studentData.map((student) => {
-        const finalScore = finalScores.find(
-          (score) => score.user_id === student.user_id
-        );
+        const finalScore = finalScores.find((score) => score.id === student.id);
 
         return {
           ...student,
           final_result: finalScore?.final_result ?? "N/A",
           major_result: finalScore?.major_result ?? "N/A",
-          id: student.user_id,
+          id: student.id,
         };
       });
 

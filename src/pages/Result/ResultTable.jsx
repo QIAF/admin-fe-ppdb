@@ -5,20 +5,20 @@ import RowTable from "../../components/UI/Table/RowTable";
 export default function ResultTable() {
   return (
     <ResultContainer
-      thead={theadKriteria}
+      thead={theadStudentPassed}
       pageFor={"homepage"}
       className={"border"}
       maxHeight={"45rem"}
     >
       <RowTable
-        ifEmpty={"Tidak ada data makanan!"}
+        ifEmpty={"Upsss !! tidak ada data"}
         data={exampleData}
         totalRow={5}
         totalCol={15}
         renderItem={(data) => {
           return (
             <tr key={data?.id}>
-              <td>{data?.user_id}</td>
+              <td>{data?.id}</td>
               <td>{data?.health_score}</td>
               <td>{data?.interview_score}</td>
               <td>{data?.average_final_score}</td>

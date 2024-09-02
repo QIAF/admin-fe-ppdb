@@ -4,6 +4,7 @@ import axios from "axios"; // Ensure axios is imported
 import { loginData, validateLogin } from "../../utils/validation";
 import Button from "../../components/UI/Button/Button";
 import { Input } from "../../components/UI/Input/Input";
+import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
 export default function Login({ title, props }) {
@@ -25,21 +26,28 @@ export default function Login({ title, props }) {
   };
   const handlePost = async (data) => {
     const formLogin = loginData(data);
+    console.log(formLogin);
     try {
       const res = await axios.post(
         "http://localhost:3000/api/v1/auth/login",
         formLogin
       );
-      if (res.status === 200) {
-        const { token } = res.data;
 
-        if (token) {
-          localStorage.setItem("token", token); // Store the token in localStorage
+      if (res.status === 200) {
+        const decoded = jwtDecode(res.data.token);
+        console.log("decode", decoded);
+
+        if (decoded && decoded.user_role === "admin") {
+          const token = res.data.token;
+          localStorage.setItem("token", token);
           console.log("Token successfully saved:", token);
           toast.success("Berhasil melakukan login", {
             delay: 800,
           });
-          navigate("/dashboard"); // Navigate to the dashboard
+          navigate("/dashboard");
+        } else {
+          toast.error("Akses hanya untuk admin", { delay: 300 });
+          console.error("Access denied: user is not an admin");
         }
       }
     } catch (error) {
@@ -47,6 +55,30 @@ export default function Login({ title, props }) {
       console.error("Failed to log in, please enter valid data", error);
     }
   };
+
+  // const handlePost = async (data) => {
+  //   const formLogin = loginData(data);
+  //   try {
+  //     const res = await axios.post(
+  //       "http://localhost:3000/api/v1/auth/login",
+  //       formLogin
+  //     );
+  //     if (res.status === 200) {
+  //       const decoded = jwtDecode(res.data.token);
+  //       if (decoded && decoded.role === "admin") {
+  //         localStorage.setItem("token", token);
+  //         console.log("Token successfully saved:", token);
+  //         toast.success("Berhasil melakukan login", {
+  //           delay: 800,
+  //         });
+  //         navigate("/dashboard");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     toast.error("user_number atau password tidak valid", { delay: 300 });
+  //     console.error("Failed to log in, please enter valid data", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (props && props.nextPage) {

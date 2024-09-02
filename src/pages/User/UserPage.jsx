@@ -40,7 +40,7 @@ export default function UserPage() {
     >
       <RowTable
         data={data}
-        ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
+        ifEmpty={"Upsss !! data tidak tersedia..."}
         totalRow={3}
         totalCol={8}
         renderItem={(data, index, offset) => {

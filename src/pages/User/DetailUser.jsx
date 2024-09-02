@@ -9,35 +9,31 @@ import backIcon from "../../assets/images/arrow-right.svg";
 import Button from "../../components/UI/Button/Button";
 import RowTable from "../../components/UI/Table/RowTable";
 import Footer from "../../components/Footer/Footer";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { formatDate } from "../../utils/validation";
 
 export default function DetailUser() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(false);
   const data = location.state?.data;
 
-  // const handleDelete = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await client.delete(`/admins/doctor/${data.id}`);
-  //     if (res?.status === 200) {
-  //       navigate("/doctors");
-  //       toast.success("Anda berhasil menghapus dokter!", {
-  //         delay: 800,
-  //       });
-  //     } else {
-  //       throw new Error("Gagal menghapus data dokter!");
-  //     }
-  //   } catch (error) {
-  //     toast.error(error?.response?.data?.meta?.message, {
-  //       delay: 800,
-  //     });
-  //   } finally {
-  //     setModalDelete(false);
-  //     setLoading(false);
-  //   }
-  // };
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:3000/api/v1/studentData/delete/${data.id}`
+      );
+      navigate("/users");
+      console.log("Data berhasil terhapus di API => ", res.data);
+      toast.success("Data berhasil dihapus");
+    } catch (error) {
+      console.error("Ada Kesalahan dalam code", error);
+      toast.error("Gagal menghapus data");
+    }
+  };
   return (
     <>
       <section className="container-fluid detail-container">
@@ -93,7 +89,7 @@ export default function DetailUser() {
                   <tr>
                     <td>Tanggal Lahir</td>
                     <td>:</td>
-                    <td>{data?.date_birth}</td>
+                    <td>{formatDate(data?.date_birth)}</td>
                   </tr>
                   <tr>
                     <td>Alamat Asal</td>
@@ -152,7 +148,8 @@ export default function DetailUser() {
                     <td>Tempat, Tanggal Lahir Ayah</td>
                     <td>:</td>
                     <td>
-                      {data?.place_birth_father}, {data?.father_birth}
+                      {data?.place_birth_father},{" "}
+                      {formatDate(data?.father_birth)}
                     </td>
                   </tr>
                   <tr>
@@ -310,7 +307,7 @@ export default function DetailUser() {
           </div>
 
           <div className="d-flex flex-row justify-content-center align-items-center gap-3 ">
-            <Link to={`/users/updateUser/${data?.user_id}`} state={data}>
+            <Link to={`/users/updateUser/${data?.id}`} state={data}>
               <Button className="btn-primary border-2 border-primary text-white fw-semibold px-4 ">
                 Edit
               </Button>
@@ -331,10 +328,8 @@ export default function DetailUser() {
           >
             <CustomModal
               disabled={loading}
-              title={"Hapus Dokter?"}
-              content={
-                "Apabila anda menghapus Dokter, maka data Dokter akan hilang"
-              }
+              title={"Hapus ?"}
+              content={"Apabila anda menghapus dara, maka data akan hilang"}
               confirmAction={handleDelete}
               cancelAction={() => setModalDelete(false)}
             />

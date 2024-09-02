@@ -55,25 +55,52 @@ export default function MajorsPage() {
   useEffect(() => {
     fetchData();
   }, []);
+  // const parseImageURL = (imageString) => {
+  //   try {
+  //     // Log raw imageString
+  //     // console.log("Raw imageString:", imageString);
+
+  //     // Parse JSON string
+  //     // const imageObject = JSON.parse(imageString);
+  //     // console.log("Parsed imageObject:", imageObject);
+
+  //     // // Extract URL from object keys
+  //     // const imageUrl = Object.keys(imageObject)[0];
+  //     // console.log("Extracted image URL:", imageUrl);
+
+  //     const imageObject = JSON.parse(imageString);
+  //     // const imageObject = JSON.parse(imageString);
+  //     console.log("image obj", imageObject);
+
+  //     const imageUrl = Object.values(imageObject);
+
+  //     return imageUrl;
+  //   } catch (e) {
+  //     console.error("Error parsing image URL:", e);
+  //     return null;
+  //   }
+  // };
+
   const parseImageURL = (imageString) => {
     try {
-      // Log raw imageString
-      console.log("Raw imageString:", imageString);
+      // Jika imageString bukan objek JSON yang valid, kita bisa menanganinya secara berbeda.
+      if (imageString.startsWith("{") && imageString.endsWith("}")) {
+        // Menghapus tanda kurung kurawal di sekitar string
+        imageString = imageString.slice(1, -1);
+      }
 
-      // Parse JSON string
-      const imageObject = JSON.parse(imageString);
-      console.log("Parsed imageObject:", imageObject);
+      // Menghapus tanda kutip jika ada
+      imageString = imageString.replace(/"/g, "");
 
-      // Extract URL from object keys
-      const imageUrl = Object.keys(imageObject)[0];
-      console.log("Extracted image URL:", imageUrl);
+      console.log("Extracted image URL:", imageString);
 
-      return imageUrl;
+      return imageString;
     } catch (e) {
       console.error("Error parsing image URL:", e);
       return null;
     }
   };
+
   const handlePost = async (data) => {
     setLoading(true);
     const formData = dataMajor(data);
@@ -142,13 +169,16 @@ export default function MajorsPage() {
       >
         <RowTable
           data={data}
-          ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
+          ifEmpty={"Upsss !! tidak ada data"}
           totalRow={3}
           totalCol={5}
           renderItem={(data, index, offset) => {
             console.log("Rendering item:", data); // Log entire data object
-            const imageUrl = parseImageURL(data?.major_picture); // Store parsed URL
-            console.log("Image URL for data ID", data?.id, ":", imageUrl);
+            // const imageUrl = parseImageURL(data?.major_picture); // Store parsed URL
+            // console.log("Image URL for data ID", data?.id, ":", imageUrl);
+            const imageUrl = data?.major_picture
+              ? parseImageURL(data.major_picture)
+              : null;
 
             return (
               <tr
@@ -162,8 +192,8 @@ export default function MajorsPage() {
                 <td>
                   {data?.major_picture ? (
                     <img
-                      src={parseImageURL(data?.major_picture)}
-                      alt={data.major_name}
+                      src={imageUrl}
+                      alt={imageUrl}
                       width={100}
                       height="auto"
                       style={{ maxWidth: "100px", height: "auto" }}
@@ -259,9 +289,9 @@ const MajorModal = ({
       {deleteConfirm && (
         <Tranparent disabled={true} style={{ zIndex: 55 }}>
           <CustomModal
-            title={"Hapus Kriteria?"}
+            title={"Hapus Bidang Keahlian?"}
             content={
-              "Apabila anda menghapus Criteria, data keseluruhan criteria akan hilang"
+              "Apabila anda menghapus data, data keseluruhan data akan hilang"
             }
             confirmAction={handleDeleteAction}
             cancelAction={() => setDeleteConfirm(false)}
@@ -332,26 +362,6 @@ const MajorModal = ({
                     {/* <ErrMsg msg={errors.name} /> */}
                   </div>
                 </div>
-                {/* <div className="mb-3 row">
-                  <label
-                    htmlFor="major_picture"
-                    className="col-sm-3 col-form-label "
-                  >
-                    Gambar Bidang Keahlian
-                  </label>
-                  <div className="col-sm-9">
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="major_picture"
-                      name="major_picture"
-                      value={data.major_picture}
-                      onChange={handleInput}
-                    />
-                    <ErrMsg msg={errors.major_picture} />
-                  </div>
-                </div> */}
-
                 <div className="mb-3">
                   <label htmlFor="studentDocument" className="form-label">
                     Gambar Bidang Keahlian

@@ -36,6 +36,12 @@ export const sides = [
     label: 'Bidang Keahlian',
     link: '/majors'
   },
+  {
+    icon: UserIcon,
+    icon2: UserIconWh,
+    label: 'Pengumuman',
+    link: '/articles'
+  },
 ]
 
 export const navTitle = [
@@ -45,7 +51,7 @@ export const navTitle = [
     },
     {
       route: 'scores',
-      // title: 'Rekapitulasi hasil seleksi',
+      title: 'Data nilai',
     },
 
     {
@@ -58,7 +64,11 @@ export const navTitle = [
     },
     {
       route: 'majors',
-      title: 'Data Major',
+      title: 'Data Jurusan',
+    },
+    {
+      route: 'articles',
+      title: 'Pengumuman',
     },
   ]
 
@@ -67,3 +77,4 @@ export const theadStudentPassed = ["NISN","Nama Siswa", "Hasil", "Bidang keahlia
 export const theadScores = ["User ID","Nama Siswa", "Nilai Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil"];
 export const theadAllScores = ["Rank","Nama Siswa", "Raport rata-rata", "Nilai Kesehatan", "Nilai Wawancara", "Hasil", "Hasil Akhir", "Bidang Keahlian", "Deskripsi"];
 export const theadAllMajors = ["Nama Bidang", "Deskripsi", "Gambar"];
+export const theadArticle = ["No", "Judul", "Deskripsi"]

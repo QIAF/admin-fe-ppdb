@@ -1,31 +1,30 @@
 import React from "react";
-import MajorsContainer from "./MajorsContainer";
+import ArticleContainer from "./ArticleContainer";
 import RowTable from "../../components/UI/Table/RowTable";
-import { theadAllMajors } from "../../utils/dataObj";
+import { theadArticle } from "../../utils/dataObj";
 
-export default function MajorsTable() {
+export default function ArticleTable() {
   return (
-    <MajorsContainer
-      thead={theadAllMajors}
+    <ArticleContainer
+      thead={theadArticle}
       pageFor={"homepage"}
       className={"border"}
       maxHeight={"45rem"}
     >
       <RowTable
-        ifEmpty={"Upsss !! data tidak tersedia..."}
+        ifEmpty={" bidang keahlian!"}
         // data={exampleData}
         totalRow={5}
         totalCol={15}
         renderItem={(data) => {
           return (
             <tr key={data?.id}>
-              <td>{data?.major_name}</td>
-              <td>{data?.major_description}</td>
-              <td>{data?.major_picture}</td>
+              <td>{data?.article_name}</td>
+              <td>{data?.article_description}</td>
             </tr>
           );
         }}
       />
-    </MajorsContainer>
+    </ArticleContainer>
   );
 }

@@ -35,14 +35,12 @@ export default function User() {
       const combinedData = studentData.map((student) => {
         // Cari report berdasarkan user_id
         const report = reportScores.find(
-          (score) => String(score.user_id) === String(student.user_id)
+          (score) => String(score.id) === String(student.id)
         );
-        const finalScore = finalScores.find(
-          (score) => score.user_id === student.user_id
-        );
+        const finalScore = finalScores.find((score) => score.id === student.id);
 
         // Debugging untuk melihat hasil pencarian
-        console.log("User ID:", student.user_id);
+        console.log("User ID:", student.id);
         console.log("Matching Report:", report);
         console.log("Matching FinalScore:", finalScore);
 
@@ -81,6 +79,7 @@ export default function User() {
       state: { data: userData, offset: offset },
     });
   };
+
   return (
     <>
       <UserTable
@@ -94,7 +93,7 @@ export default function User() {
         <RowTable
           isError={isError}
           isPending={isPending}
-          ifEmpty={"Tidak ada data Riwayat Pemilihan!"}
+          ifEmpty={"Upsss !! data tidak tersedia..."}
           data={filteredData}
           totalRow={3}
           totalCol={8}
@@ -106,7 +105,7 @@ export default function User() {
                 key={index}
               >
                 {/* <td>{data?.user_id}</td> */}
-                <td>{index + 1}</td>
+                <td>{data?.id}</td>
                 <td>{data?.nisn}</td>
                 <td>{data?.student_name}</td>
                 <td>{data?.student_gender}</td>

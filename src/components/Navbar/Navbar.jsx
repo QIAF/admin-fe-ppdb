@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 import { useLocation } from "react-router-dom";
 import { navTitle } from "../../utils/dataObj";
+import Logo from "../../assets/images/logo-only.png";
 
 export default function Navbar() {
   // Buat render title dan content secara dinamis berdasarkan rute
@@ -37,9 +38,9 @@ const UserProfile = () => {
   useEffect(() => {
     setTimeout(() => {
       setUserData({
-        // avatar: "assetsimagesIconProfile.svg",
+        avatar: "assetsimagesIconProfile.svg",
         // name: "Admin SMK",
-        // role: "Admin",
+        role: "Admin",
       });
       setLoading(false);
     }, 2000);
@@ -52,7 +53,7 @@ const UserProfile = () => {
         <p>Loading...</p>
       ) : (
         <>
-          <img src={userData.avatar} alt="Avatar" width={48} height={48} />
+          {/* <img src={Logo} alt="Avatar" width={60} height={42} /> */}
           <div>
             <p className="m-0 fs-3">{userData.name}</p>
             <p className="m-0">{userData.role}</p>

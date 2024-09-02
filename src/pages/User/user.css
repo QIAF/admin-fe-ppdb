@@ -16,6 +16,10 @@
     top: 5%;
 }
 
+.required {
+    color: red;
+}
+
 .title-width {
     width: 50%;
 }

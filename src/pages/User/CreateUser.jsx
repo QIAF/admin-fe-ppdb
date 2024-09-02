@@ -1,174 +1,163 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input } from "../../components/UI/Input/Input";
-import useForm from "../../components/Hooks/UseForm";
-import { useLocation, useNavigate } from "react-router";
-import { dataStudent, validateStudentData } from "../../utils/validation";
+import { useNavigate } from "react-router";
 import Button from "../../components/UI/Button/Button";
-import Footer from "../../components/Footer/Footer";
+import { dataStudent, validateStudentData } from "../../utils/validation";
 import axios from "axios";
 import { toast } from "react-toastify";
+import "./user.css";
+import Footer from "../../components/Footer/Footer";
+import { ErrMsg } from "../../components/Error/ErrMsg";
 
-export default function UpdateUser() {
-  const location = useLocation();
+export default function CreateUser() {
   const navigate = useNavigate();
-  const state = location.state;
-  const idUser = state?.id;
-  console.log("Location State:", state);
-  console.log("User ID:", idUser);
+  const [error, setError] = useState({});
 
-  const initialState = {
-    student_name: state.student_name ?? "",
-    family_card_number: state.family_card_number ?? "",
-    student_gender: state.student_gender ?? "",
-    place_birth: state.place_birth ?? "",
-    date_birth: state.date_birth ?? "",
-    student_address: state.student_address ?? "",
-    student_address_now: state.student_address_now ?? "",
-    student_distance: state.student_distance ?? "",
-    student_religion: state.student_religion ?? "",
-    student_blood_type: state.student_blood_type ?? "",
-    student_height: state.student_height ?? "",
-    student_weight: state.student_weight ?? "",
-    student_child: state.student_child ?? "",
-    student_kps: state.student_kps ?? "",
-    student_hobby: state.student_hobby ?? "",
+  const [form, setForm] = useState(() => {
+    const savedData = localStorage.getItem("form");
+    return savedData
+      ? JSON.parse(savedData)
+      : {
+          student_name: "",
+          student_card_number: "",
+          family_card_number: "",
+          student_gender: "",
+          place_birth: "",
+          date_birth: "",
+          student_address: "",
+          student_address_now: "",
+          student_distance: "",
+          student_religion: "",
+          student_blood_type: "",
+          student_weight: "",
+          student_height: "",
+          student_child: "",
+          student_kps: "",
+          student_hobby: "",
 
-    father_name: state.father_name ?? "",
-    place_birth_father: state.place_birth_father ?? "",
-    father_birth: state.father_birth ?? "",
-    father_job: state.father_job ?? "",
-    father_income: state.father_income ?? "",
-    mother_name: state.mother_name ?? "",
-    place_birth_mother: state.place_birth_mother ?? "",
-    mother_job: state.mother_job ?? "",
-    mother_income: state.mother_income ?? "",
-    phoneNumber_house: state.phoneNumber_house ?? "",
+          father_name: "",
+          father_job: "",
+          father_income: "",
+          place_birth_father: "",
+          father_birth: "",
+          mother_name: "",
+          mother_job: "",
+          mother_income: "",
+          place_birth_mother: "",
+          mother_birth: "",
+          phoneNumber_house: "",
 
-    guardian_name: state.guardian_name ?? "",
-    guardian_address: state.guardian_address ?? "",
-    guardian_phone: state.guardian_phone ?? "",
-    guardian_job: state.guardian_job ?? "",
+          guardian_name: "",
+          guardian_address: "",
+          guardian_phone: "",
+          guardian_job: "",
 
-    school_name: state.school_name ?? "",
-    school_status: state.school_status ?? "",
-    school_address: state.school_address ?? "",
-    ijazah_number: state.ijazah_number ?? "",
-    major_choice: state.major_choice ?? "",
-    nisn: state.nisn ?? "",
+          school_name: "",
+          school_status: "",
+          school_address: "",
+          ijazah_number: "",
+          major_choice1: "",
+          major_choice2: "",
+          nisn: "",
 
-    mathematics1: state.report.mathematics1 ?? "",
-    mathematics2: state.report.mathematics2 ?? "",
-    mathematics3: state.report.mathematics3 ?? "",
-    mathematics4: state.report.mathematics4 ?? "",
-    mathematics5: state.report.mathematics5 ?? "",
+          mathematics1: "",
+          mathematics2: "",
+          mathematics3: "",
+          mathematics4: "",
+          mathematics5: "",
 
-    science1: state.report.science1 ?? "",
-    science2: state.report.science2 ?? "",
-    science3: state.report.science3 ?? "",
-    science4: state.report.science4 ?? "",
-    science5: state.report.science5 ?? "",
+          science1: "",
+          science2: "",
+          science3: "",
+          science4: "",
+          science5: "",
 
-    indonesian1: state.report.indonesian1 ?? "",
-    indonesian2: state.report.indonesian2 ?? "",
-    indonesian3: state.report.indonesian3 ?? "",
-    indonesian4: state.report.indonesian4 ?? "",
-    indonesian5: state.report.indonesian5 ?? "",
+          indonesian1: "",
+          indonesian2: "",
+          indonesian3: "",
+          indonesian4: "",
+          indonesian5: "",
 
-    english1: state.report.english1 ?? "",
-    english2: state.report.english2 ?? "",
-    english3: state.report.english3 ?? "",
-    english4: state.report.english4 ?? "",
-    english5: state.report.english5 ?? "",
-  };
-  const initialError = {
-    student_name: "",
-    family_card_number: "",
-    student_gender: "",
-    place_birth: "",
-    date_birth: "",
-    student_address: "",
-    student_address_now: "",
-    student_distance: "",
-    student_religion: "",
-    student_blood_type: "",
-    student_height: "",
-    student_weight: "",
-    student_child: "",
-    student_kps: "",
-    student_hobby: "",
+          english1: "",
+          english2: "",
+          english3: "",
+          english4: "",
+          english5: "",
+          interview_score: 1,
+          health_score: 1,
 
-    father_name: "",
-    father_job: "",
-    father_income: "",
-    place_birth_father: "",
-    father_birth: "",
-    mother_name: "",
-    mother_job: "",
-    mother_income: "",
-    place_birth_mother: "",
-    mother_birth: "",
-    phoneNumber_house: "",
+          studentDocument: "",
+        };
+  });
 
-    guardian_name: "",
-    guardian_address: "",
-    guardian_phone: "",
-    guardian_job: "",
-
-    school_name: "",
-    school_status: "",
-    school_address: "",
-    ijazah_number: "",
-    major_choice: "",
-    nisn: "",
-
-    mathematics1: "",
-    mathematics2: "",
-    mathematics3: "",
-    mathematics4: "",
-    mathematics5: "",
-
-    science1: "",
-    science2: "",
-    science3: "",
-    science4: "",
-    science5: "",
-
-    indonesian1: "",
-    indonesian2: "",
-    indonesian3: "",
-    indonesian4: "",
-    indonesian5: "",
-
-    english1: "",
-    english2: "",
-    english3: "",
-    english4: "",
-    english5: "",
+  const handleFilePdf = (e) => {
+    const { name, files } = e.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: files[0], // Memasukkan file yang dipilih ke dalam formData
+    }));
   };
 
-  const { form, setForm, errors, setErrors, handleInput, setLoading, loading } =
-    useForm(initialState, initialError);
-  const [isFormChanged, setIsFormChanged] = useState(false);
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value,
+    });
+    console.log(form);
+  };
 
-  const handleUpdateData = async (data) => {
-    const formData = dataStudent(data);
-    console.log("Form Data:", formData);
-    try {
-      const res = await axios.patch(
-        `http://localhost:3000/api/v1/studentData/update/${idUser}`,
-        formData
-      );
-      if (res.status === 200) {
-        console.log("Data Terbaru:", res.data);
-        toast.success("Anda berhasil mengubah nilai", { delay: 800 });
-        navigate("/users");
+  const handleCreate = async () => {
+    const dataToSend = dataStudent(form);
+
+    const formDataToSend = new FormData();
+    for (let key in dataToSend) {
+      formDataToSend.append(key, dataToSend[key]);
+    }
+
+    if (validateStudentData(form, setError)) {
+      const token = localStorage.getItem("token");
+      console.log("Token untuk request:", token);
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      try {
+        // Kirim permintaan ke server
+        const res = await axios.post(
+          "http://localhost:3000/api/v1/studentData/create",
+          formDataToSend,
+          config
+        );
+
+        if (res.status === 200) {
+          toast.success("Berhasil menambahkan data", { delay: 800 });
+          navigate("/users");
+
+          localStorage.removeItem("form");
+        }
+      } catch (error) {
+        // Menangkap dan mencetak pesan error secara lebih mendetail
+        toast.error("Gagal menambahkan data", { delay: 800 });
+
+        // Jika server mengirim response error
+        if (error.response) {
+          console.error("Error Data:", error.response.data);
+          console.error("Error Status:", error.response.status);
+          console.error("Error Headers:", error.response.headers);
+        } else if (error.request) {
+          // Jika tidak ada response dari server
+          console.error("Tidak ada response dari server:", error.request);
+        } else {
+          // Jika ada sesuatu yang salah dalam pengaturan permintaan
+          console.error("Error Pengaturan Permintaan:", error.message);
+        }
       }
-    } catch (error) {
-      console.error(
-        "Kesalahan saat memperbarui data:",
-        error.response?.data || error.message
-      );
-      toast.error("Anda gagal mengubah nilai", { delay: 800 });
+    } else {
+      alert("Data belum lengkap");
     }
   };
 
@@ -184,12 +173,16 @@ export default function UpdateUser() {
               <br />
               <div className="body center ">
                 <div className="student-data">
+                  <h5 style={{ marginBottom: "30px" }}>Data Calon Siswa</h5>
                   <div className="row mb-3">
                     <label
                       htmlFor="student_name"
                       className="col col-form-label"
                     >
-                      Nama Lengkap
+                      Nama Lengkap{" "}
+                      {!form.student_name && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8 ">
                       <Input
@@ -200,6 +193,29 @@ export default function UpdateUser() {
                         value={form.student_name}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_name} />
+                    </div>
+                  </div>
+                  <div className="row mb-3">
+                    <label
+                      htmlFor="student_card_number"
+                      className="col col-form-label"
+                    >
+                      No KK Siswa{" "}
+                      {!form.student_card_number && (
+                        <span className="required">*</span>
+                      )}
+                    </label>
+                    <div className="col-sm-8 ">
+                      <Input
+                        type={"text"}
+                        className={"form-control"}
+                        id={"student_card_number"}
+                        name="student_card_number"
+                        value={form.student_card_number_card_number}
+                        onChange={handleInput}
+                      />
+                      <ErrMsg msg={error.student_card_number} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -207,7 +223,10 @@ export default function UpdateUser() {
                       htmlFor="family_card_number"
                       className="col col-form-label"
                     >
-                      NIK
+                      NIK{" "}
+                      {!form.family_card_number && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8 ">
                       <Input
@@ -218,6 +237,7 @@ export default function UpdateUser() {
                         value={form.family_card_number}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.family_card_number} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -225,43 +245,33 @@ export default function UpdateUser() {
                       htmlFor="student_gender"
                       className="col col-form-label"
                     >
-                      Jenis kelamin
+                      Jenis kelamin{" "}
+                      {!form.student_gender && (
+                        <span className="required">*</span>
+                      )}
                     </label>
-                    <div className="col">
-                      <Input
-                        type={"radio"}
-                        id={"Laki-laki"}
-                        className={"form-check-input"}
+                    <div className="col-sm-8">
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_gender"
                         name="student_gender"
-                        value="Laki-laki"
-                        onChange={handleInput}
-                      />
-                      <label className="form-check-label" htmlFor="inlineMale">
-                        {" "}
-                        &nbsp; Laki-laki
-                      </label>
-                    </div>
-                    <div className="col">
-                      <Input
-                        type={"radio"}
-                        id={"Perempuan"}
-                        className={"form-check-input"}
-                        name="student_gender"
-                        value="Perempuan"
-                        //   checked={form.student_gender === "Perempuan"}
-                        onChange={handleInput}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="inlineFemale"
+                        value={form.student_gender} // Menyinkronkan nilai select dengan formData
+                        onChange={handleInput} // Memperbarui formData saat pilihan berubah
                       >
-                        &nbsp; Perempuan
-                      </label>
+                        <option value="">Pilih salah satu</option>{" "}
+                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
+
+                      <ErrMsg msg={error.student_gender} />
                     </div>
                   </div>
                   <div className="row mb-3">
                     <label htmlFor="place_birth" className="col col-form-label">
                       Tempat lahir
+                      {!form.place_birth && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <textarea
@@ -278,6 +288,7 @@ export default function UpdateUser() {
                   <div className="row mb-3">
                     <label htmlFor="date_birth" className="col col-form-label">
                       Tanggal lahir
+                      {!form.date_birth && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -288,6 +299,7 @@ export default function UpdateUser() {
                         value={form.date_birth}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.date_birth} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -295,7 +307,10 @@ export default function UpdateUser() {
                       htmlFor="student_address"
                       className="col col-form-label"
                     >
-                      Alamat Asal
+                      Alamat Asal{" "}
+                      {!form.student_address && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <textarea
@@ -306,6 +321,7 @@ export default function UpdateUser() {
                         value={form.student_address}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_address} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -313,7 +329,10 @@ export default function UpdateUser() {
                       htmlFor="student_distance"
                       className="col col-form-label"
                     >
-                      Alamat di Yogyakrata
+                      Alamat di Yogyakarta
+                      {!form.student_address_now && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -324,6 +343,7 @@ export default function UpdateUser() {
                         value={form.student_address_now}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_address_now} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -331,7 +351,10 @@ export default function UpdateUser() {
                       htmlFor="student_distance"
                       className="col col-form-label"
                     >
-                      Jarak rumah ke sekolah
+                      Jarak rumah ke sekolah{" "}
+                      {!form.student_distance && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -342,6 +365,7 @@ export default function UpdateUser() {
                         value={form.student_distance}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_distance} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -350,6 +374,9 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Agama
+                      {!form.student_religion && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <select
@@ -360,7 +387,7 @@ export default function UpdateUser() {
                         value={form.student_religion} // Menyinkronkan nilai select dengan form
                         onChange={handleInput} // Memperbarui form saat pilihan berubah
                       >
-                        <option value="">Pilih Agama</option>{" "}
+                        <option value="">Pilih salah satu</option>{" "}
                         {/* Opsi default untuk mendorong pilihan */}
                         <option value="Islam">Islam</option>
                         <option value="Kristen">Kristen</option>
@@ -369,6 +396,7 @@ export default function UpdateUser() {
                         <option value="Budha">Budha</option>
                         <option value="Khonghucu">Khonghucu</option>
                       </select>
+                      <ErrMsg msg={error.student_religion} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -376,7 +404,10 @@ export default function UpdateUser() {
                       htmlFor="student_blood_type"
                       className="col col-form-label"
                     >
-                      Golongan Darah
+                      Golongan Darah{" "}
+                      {!form.student_blood_type && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -387,6 +418,7 @@ export default function UpdateUser() {
                         value={form.student_blood_type}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_blood_type} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -394,7 +426,10 @@ export default function UpdateUser() {
                       htmlFor="student_height"
                       className="col col-form-label"
                     >
-                      Tinggi Badan
+                      Tinggi Badan{" "}
+                      {!form.student_weight && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -405,6 +440,7 @@ export default function UpdateUser() {
                         value={form.student_height}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_height} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -412,7 +448,10 @@ export default function UpdateUser() {
                       htmlFor="student_weight"
                       className="col col-form-label"
                     >
-                      Berat Badan
+                      Berat Badan{" "}
+                      {!form.student_height && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -423,6 +462,7 @@ export default function UpdateUser() {
                         value={form.student_weight}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_weight} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -430,7 +470,10 @@ export default function UpdateUser() {
                       htmlFor="student_child"
                       className="col col-form-label"
                     >
-                      Anak ke-
+                      Anak ke-{" "}
+                      {!form.student_child && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -441,21 +484,29 @@ export default function UpdateUser() {
                         value={form.student_child}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_child} />
                     </div>
                   </div>
                   <div className="row mb-3">
                     <label htmlFor="student_kps" className="col col-form-label">
-                      student_kps
+                      KPS,PKH/PIP/KMS Kota{" "}
+                      {!form.student_kps && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"student_kps"}
-                        name={"student_kps"}
-                        value={form.student_kps}
-                        onChange={handleInput}
-                      />
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_kps"
+                        name="student_kps"
+                        value={form.student_kps} // Menyinkronkan nilai select dengan formData
+                        onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="Ya">Tidak</option>
+                        <option value="Tidak">Ya</option>
+                      </select>
+                      <ErrMsg msg={error.student_child} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -463,7 +514,10 @@ export default function UpdateUser() {
                       htmlFor="student_hobby"
                       className="col col-form-label"
                     >
-                      Hobi
+                      Hobi{" "}
+                      {!form.student_hobby && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -474,14 +528,19 @@ export default function UpdateUser() {
                         value={form.student_hobby}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.student_hobby} />
                     </div>
                   </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Data Orangtua Calon Siswa
+                  </h5>
                   <div className="row mb-3">
                     <label
                       htmlFor="inputfather_name"
                       className="col col-form-label"
                     >
-                      Nama Ayah
+                      Nama Ayah{" "}
+                      {!form.father_name && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -492,6 +551,7 @@ export default function UpdateUser() {
                         value={form.father_name}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.father_name} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -499,7 +559,10 @@ export default function UpdateUser() {
                       htmlFor="inputplace_birth_father"
                       className="col col-form-label"
                     >
-                      Tempat lahir
+                      Tempat lahir{" "}
+                      {!form.place_birth_father && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <textarea
@@ -511,6 +574,7 @@ export default function UpdateUser() {
                         value={form.place_birth_father}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.place_birth_father} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -518,7 +582,10 @@ export default function UpdateUser() {
                       htmlFor="inputfather_birth"
                       className="col col-form-label"
                     >
-                      Tanggal lahir
+                      Tanggal lahir{" "}
+                      {!form.father_birth && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -529,6 +596,7 @@ export default function UpdateUser() {
                         value={form.father_birth}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.father_birth} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -536,7 +604,8 @@ export default function UpdateUser() {
                       htmlFor="inputmother_name"
                       className="col col-form-label"
                     >
-                      Nama Ibu
+                      Nama Ibu{" "}
+                      {!form.mother_name && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -547,6 +616,7 @@ export default function UpdateUser() {
                         value={form.mother_name}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.mother_name} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -554,7 +624,10 @@ export default function UpdateUser() {
                       htmlFor="inputplace_birth_mother"
                       className="col col-form-label"
                     >
-                      Tempat Lahir Ibu
+                      Tempat Lahir Ibu{" "}
+                      {!form.place_birth_mother && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <textarea
@@ -566,6 +639,7 @@ export default function UpdateUser() {
                         value={form.place_birth_mother}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.place_birth_mother} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -573,7 +647,10 @@ export default function UpdateUser() {
                       htmlFor="inputmother_birth"
                       className="col col-form-label"
                     >
-                      Tanggal Lahir Ibu
+                      Tanggal Lahir Ibu{" "}
+                      {!form.mother_birth && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -584,6 +661,7 @@ export default function UpdateUser() {
                         value={form.mother_birth}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.place_birth_mother} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -591,7 +669,10 @@ export default function UpdateUser() {
                       htmlFor="inputPhoneNumber"
                       className="col col-form-label"
                     >
-                      Nomor Telepon Rumah
+                      Nomor Telepon Rumah{" "}
+                      {!form.phoneNumber_house && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -602,6 +683,7 @@ export default function UpdateUser() {
                         value={form.phoneNumber_house}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.phoneNumber_house} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -609,7 +691,8 @@ export default function UpdateUser() {
                       htmlFor="inputfather_job"
                       className="col col-form-label"
                     >
-                      Pekerjaan ayah
+                      Pekerjaan ayah{" "}
+                      {!form.father_job && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -620,6 +703,7 @@ export default function UpdateUser() {
                         value={form.father_job}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.father_job} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -627,7 +711,10 @@ export default function UpdateUser() {
                       htmlFor="inputfather_job"
                       className="col col-form-label"
                     >
-                      Pendapatan perbulan
+                      Pendapatan ayah perbulan{" "}
+                      {!form.father_income && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -638,6 +725,7 @@ export default function UpdateUser() {
                         value={form.father_income}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.father_income} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -645,7 +733,8 @@ export default function UpdateUser() {
                       htmlFor="inputmother_job"
                       className="col col-form-label"
                     >
-                      Pekerjaan Ibu
+                      Pekerjaan Ibu{" "}
+                      {!form.mother_job && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -656,6 +745,7 @@ export default function UpdateUser() {
                         value={form.mother_job}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.mother_job} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -663,7 +753,10 @@ export default function UpdateUser() {
                       htmlFor="inputmother_job"
                       className="col col-form-label"
                     >
-                      Pendapatan Perbulan
+                      Pendapatan Ibu Perbulan{" "}
+                      {!form.mother_income && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -674,8 +767,12 @@ export default function UpdateUser() {
                         value={form.mother_income}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.mother_income} />
                     </div>
                   </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Data Wali Calon Siswa
+                  </h5>
                   <div className="row mb-3">
                     <label
                       htmlFor="inputguardian_name"
@@ -749,6 +846,9 @@ export default function UpdateUser() {
                       />
                     </div>
                   </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Data Asal Sekolah Calon Siswa
+                  </h5>
 
                   <div className="row mb-3">
                     <label
@@ -756,6 +856,7 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Nama Sekolah
+                      {!form.school_name && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -774,16 +875,26 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Status Sekolah
+                      {!form.school_status && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"school_status"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="school_status"
                         name="school_status"
                         value={form.school_status}
                         onChange={handleInput}
-                      />
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="Negeri">Negeri</option>
+                        <option value="Swasta">Swasta</option>
+                      </select>
+
+                      <ErrMsg msg={error.school_status} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -792,16 +903,20 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Alamat Sekolah
+                      {!form.school_address && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
                         type={"text"}
                         className={"form-control"}
-                        id={"school_addressh"}
+                        id={"school_address"}
                         name="school_address"
                         value={form.school_address}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.school_address} />
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -810,6 +925,9 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Nomor Ijazah
+                      {!form.ijazah_number && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -820,11 +938,13 @@ export default function UpdateUser() {
                         value={form.ijazah_number}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.ijazah_number} />
                     </div>
                   </div>
                   <div className="row mb-3">
                     <label htmlFor="nisn" className="col col-form-label">
                       NISN
+                      {!form.nisn && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
                       <Input
@@ -835,13 +955,153 @@ export default function UpdateUser() {
                         value={form.nisn}
                         onChange={handleInput}
                       />
+                      <ErrMsg msg={error.nisn} />
                     </div>
                   </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Data Pilihan Bidang Keahlian
+                  </h5>
+                  <div className="row mb-3">
+                    <label
+                      htmlFor="student_gender"
+                      className="col col-form-label"
+                    >
+                      Pilihan Bidang Keahlian 1
+                      {!form.major_choice1 && (
+                        <span className="required">*</span>
+                      )}
+                    </label>
+                    <div className="col-sm-8">
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="major_choice1"
+                        name="major_choice1"
+                        value={form.major_choice1} // Menyinkronkan nilai select dengan formData
+                        onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                      >
+                        <option value="">Pilihan pertama</option>{" "}
+                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="Teknik Kendaraan">
+                          Teknik Kendaraan
+                        </option>
+                        <option value="Teknik Elektronika">
+                          Teknik Elektronika
+                        </option>
+                        <option value="Teknik Ketenagalistrikan">
+                          Teknik Ketenagalistrikan
+                        </option>
+                        <option value="Teknik Komputer Dan Jaringan">
+                          Teknik Komputer Dan Jaringan
+                        </option>
+                        <option value="Teknik Sepeda Motor">
+                          Teknik Sepeda Motor
+                        </option>
+                        <option value="Desain Permodelan Dan Informasi Bangunan">
+                          Desain Permodelan Dan Informasi Bangunan
+                        </option>
+                        <option value="Teknologi Farmasi">
+                          Teknologi Farmasi
+                        </option>
+                      </select>
+                      <ErrMsg msg={error.major_choice1} />
+                    </div>
+                  </div>
+                  <div className="row mb-3">
+                    <label
+                      htmlFor="student_gender"
+                      className="col col-form-label"
+                    >
+                      Pilihan Bidang Keahlian 2
+                      {!form.major_choice2 && (
+                        <span className="required">*</span>
+                      )}
+                    </label>
+                    <div className="col-sm-8">
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="major_choice2"
+                        name="major_choice2"
+                        value={form.major_choice2} // Menyinkronkan nilai select dengan formData
+                        onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                      >
+                        <option value="">Pilihan Kedua</option>{" "}
+                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="Teknik Kendaraan">
+                          Teknik Kendaraan
+                        </option>
+                        <option value="Teknik Elektronika">
+                          Teknik Elektronika
+                        </option>
+                        <option value="Teknik Ketenagalistrikan">
+                          Teknik Ketenagalistrikan
+                        </option>
+                        <option value="Teknik Komputer Dan Jaringan">
+                          Teknik Komputer Dan Jaringan
+                        </option>
+                        <option value="Teknik Sepeda Motor">
+                          Teknik Sepeda Motor
+                        </option>
+                        <option value="Desain Permodelan Dan Informasi Bangunan">
+                          Desain Permodelan Dan Informasi Bangunan
+                        </option>
+                        <option value="Teknologi Farmasi">
+                          Teknologi Farmasi
+                        </option>
+                      </select>
+                      <ErrMsg msg={error.major_choice2} />
+                    </div>
+                  </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Upload Dokumen
+                  </h5>
+                  <div className="mb-3">
+                    <label htmlFor="studentDocument" className="form-label">
+                      <b>
+                        Siswa diwajibkan untuk mengunggah dokumen PDF dengan
+                        format nama file menggunakan Nama Lengkap Anda:{" "}
+                        {!form.studentDocument && (
+                          <span className="required">*</span>
+                        )}
+                      </b>
+                      <br /> <br />
+                      1.Scan/foto Kartu Keluarga <br />
+                      2. Scan/foto Akta Kelahiran <br />
+                      3. Sertifikat Prestasi <br />
+                      4. Surat Keterangan Lulus <br />
+                      5. Ijazah SMP <br />
+                      <br />
+                      Contoh format nama file: Nama_Lengkap_Siswa.pdf <br />{" "}
+                      Pastikan semua dokumen yang diunggah jelas dan terbaca
+                      dengan baik. <br />
+                      <br />
+                    </label>
+                    <Input
+                      type={"file"}
+                      id="studentDocument"
+                      name="studentDocument"
+                      className={"form-control"}
+                      onChange={handleFilePdf}
+                      accept=".pdf"
+                      multiple={false}
+                    />
+                    <ErrMsg msg={error.studentDocument} />
+                  </div>
+                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
+                    Data Pilihan Bidang Keahlian
+                  </h5>
+
                   <table style={{ width: "100%" }} className="table">
                     <tbody className="m-auto">
                       <tr>
                         <td className="text-center">
-                          <b>Matematika</b>
+                          <b>
+                            Matematika
+                            {!form.mathematics5 && (
+                              <span className="required">*</span>
+                            )}
+                          </b>
                         </td>
                         <td>
                           <Input
@@ -852,6 +1112,7 @@ export default function UpdateUser() {
                             value={form.mathematics1}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.mathematics1} />
                         </td>
 
                         <td>
@@ -863,6 +1124,7 @@ export default function UpdateUser() {
                             value={form.mathematics2}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.mathematics2} />
                         </td>
                         <td>
                           <Input
@@ -873,6 +1135,7 @@ export default function UpdateUser() {
                             value={form.mathematics3}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.mathematics3} />
                         </td>
                         <td>
                           <Input
@@ -883,6 +1146,7 @@ export default function UpdateUser() {
                             value={form.mathematics4}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.mathematics4} />
                         </td>
                         <td>
                           <Input
@@ -893,11 +1157,17 @@ export default function UpdateUser() {
                             value={form.mathematics5}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.mathematics5} />
                         </td>
                       </tr>
                       <tr>
                         <td className="text-center">
-                          <b>IPA</b>
+                          <b>
+                            IPA
+                            {!form.science5 && (
+                              <span className="required">*</span>
+                            )}
+                          </b>
                         </td>
                         <td>
                           <Input
@@ -907,6 +1177,7 @@ export default function UpdateUser() {
                             value={form.science1}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.science1} />
                         </td>
                         <td>
                           <Input
@@ -916,6 +1187,7 @@ export default function UpdateUser() {
                             value={form.science2}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.science2} />
                         </td>
                         <td>
                           <Input
@@ -925,6 +1197,7 @@ export default function UpdateUser() {
                             value={form.science3}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.science3} />
                         </td>
                         <td>
                           <Input
@@ -934,6 +1207,7 @@ export default function UpdateUser() {
                             value={form.science4}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.science4} />
                         </td>
                         <td>
                           <Input
@@ -943,11 +1217,17 @@ export default function UpdateUser() {
                             value={form?.science5}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.science5} />
                         </td>
                       </tr>
                       <tr>
                         <td className="text-center">
-                          <b>Bahasa Indonesia</b>
+                          <b>
+                            Bahasa Indonesia
+                            {!form.indonesian5 && (
+                              <span className="required">*</span>
+                            )}
+                          </b>
                         </td>
                         <td>
                           <Input
@@ -957,6 +1237,7 @@ export default function UpdateUser() {
                             value={form.indonesian1}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.indonesian1} />
                         </td>
                         <td>
                           <Input
@@ -966,6 +1247,7 @@ export default function UpdateUser() {
                             value={form.indonesian2}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.indonesian2} />
                         </td>
                         <td>
                           <Input
@@ -975,6 +1257,7 @@ export default function UpdateUser() {
                             value={form.indonesian3}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.indonesian3} />
                         </td>
                         <td>
                           <Input
@@ -984,6 +1267,7 @@ export default function UpdateUser() {
                             value={form.indonesian4}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.indonesian4} />
                         </td>
                         <td>
                           <Input
@@ -993,11 +1277,17 @@ export default function UpdateUser() {
                             value={form.indonesian5}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.indonesian5} />
                         </td>
                       </tr>
                       <tr>
                         <td className="text-center">
-                          <b>Bahasa Inggris</b>
+                          <b>
+                            Bahasa Inggris
+                            {!form.english5 && (
+                              <span className="required">*</span>
+                            )}
+                          </b>
                         </td>
 
                         <td>
@@ -1008,6 +1298,7 @@ export default function UpdateUser() {
                             value={form.english1}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.english1} />
                         </td>
                         <td>
                           <Input
@@ -1017,6 +1308,7 @@ export default function UpdateUser() {
                             value={form.english2}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.english2} />
                         </td>
                         <td>
                           <Input
@@ -1026,6 +1318,7 @@ export default function UpdateUser() {
                             value={form.english3}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.english3} />
                         </td>
                         <td>
                           <Input
@@ -1035,6 +1328,7 @@ export default function UpdateUser() {
                             value={form.english4}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.english4} />
                         </td>
                         <td>
                           <Input
@@ -1044,6 +1338,7 @@ export default function UpdateUser() {
                             value={form.english5}
                             onChange={handleInput}
                           />
+                          <ErrMsg msg={error.english5} />
                         </td>
                       </tr>
                     </tbody>
@@ -1055,7 +1350,8 @@ export default function UpdateUser() {
                   <Button
                     type="submit"
                     className={"btn-primary text-white fw-semibold"}
-                    onClick={() => handleUpdateData(form)}
+                    onClick={() => handleCreate(form)}
+                    error={error}
                   >
                     Simpan
                   </Button>
