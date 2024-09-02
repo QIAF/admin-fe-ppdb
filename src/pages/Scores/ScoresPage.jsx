@@ -282,7 +282,7 @@ const ScoresModal = ({
         className="modal"
         tabIndex="-1"
         role="dialog"
-        aria-hidden="true"
+        // aria-hidden="true"
         style={{ display: "block", zIndex: "51" }}
       >
         <div className="modal-dialog modal-dialog-centered">

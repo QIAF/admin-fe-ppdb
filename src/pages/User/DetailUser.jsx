@@ -82,15 +82,14 @@ export default function DetailUser() {
                     <td>{data?.student_gender}</td>
                   </tr>
                   <tr>
-                    <td>Tempat Lahir</td>
+                    <td>Tempat Lahir, tanggal lahir</td>
                     <td>:</td>
-                    <td>{data?.place_birth}</td>
+                    <td>
+                      {data?.place_birth}
+                      {","} {formatDate(data?.date_birth)}
+                    </td>
                   </tr>
-                  <tr>
-                    <td>Tanggal Lahir</td>
-                    <td>:</td>
-                    <td>{formatDate(data?.date_birth)}</td>
-                  </tr>
+
                   <tr>
                     <td>Alamat Asal</td>
                     <td>:</td>
@@ -145,10 +144,11 @@ export default function DetailUser() {
                     <td>{data?.father_name}</td>
                   </tr>
                   <tr>
-                    <td>Tempat, Tanggal Lahir Ayah</td>
+                    <td>Tempat, tanggal Lahir Ayah</td>
                     <td>:</td>
                     <td>
-                      {data?.place_birth_father},{" "}
+                      {data?.place_birth_father}
+                      {", "}
                       {formatDate(data?.father_birth)}
                     </td>
                   </tr>
@@ -168,8 +168,9 @@ export default function DetailUser() {
                     <td>Tempat, tanggal lahir ibu</td>
                     <td>:</td>
                     <td>
-                      {" "}
-                      {data?.place_birth_mother}, {data?.mother_birth}
+                      {data?.place_birth_mother}
+                      {", "}
+                      {formatDate(data?.mother_birth)}
                     </td>
                   </tr>
                   <tr>

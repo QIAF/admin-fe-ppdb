@@ -39,6 +39,23 @@ export default function MajorsPage() {
     setEditModal(true);
   };
 
+  const parseImageURL = (imageString) => {
+    try {
+      // Jika imageString bukan objek JSON yang valid, kita bisa menanganinya secara berbeda.
+      if (imageString.startsWith("{") && imageString.endsWith("}")) {
+        // Menghapus tanda kurung kurawal di sekitar string
+        imageString = imageString.slice(1, -1);
+      }
+
+      // Menghapus tanda kutip jika ada
+      imageString = imageString.replace(/"/g, "");
+
+      return imageString;
+    } catch (e) {
+      console.error("Error parsing image URL:", e);
+      return null;
+    }
+  };
   const fetchData = async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/v1/major");
@@ -51,55 +68,9 @@ export default function MajorsPage() {
       setIsPending(false);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, []);
-  // const parseImageURL = (imageString) => {
-  //   try {
-  //     // Log raw imageString
-  //     // console.log("Raw imageString:", imageString);
-
-  //     // Parse JSON string
-  //     // const imageObject = JSON.parse(imageString);
-  //     // console.log("Parsed imageObject:", imageObject);
-
-  //     // // Extract URL from object keys
-  //     // const imageUrl = Object.keys(imageObject)[0];
-  //     // console.log("Extracted image URL:", imageUrl);
-
-  //     const imageObject = JSON.parse(imageString);
-  //     // const imageObject = JSON.parse(imageString);
-  //     console.log("image obj", imageObject);
-
-  //     const imageUrl = Object.values(imageObject);
-
-  //     return imageUrl;
-  //   } catch (e) {
-  //     console.error("Error parsing image URL:", e);
-  //     return null;
-  //   }
-  // };
-
-  const parseImageURL = (imageString) => {
-    try {
-      // Jika imageString bukan objek JSON yang valid, kita bisa menanganinya secara berbeda.
-      if (imageString.startsWith("{") && imageString.endsWith("}")) {
-        // Menghapus tanda kurung kurawal di sekitar string
-        imageString = imageString.slice(1, -1);
-      }
-
-      // Menghapus tanda kutip jika ada
-      imageString = imageString.replace(/"/g, "");
-
-      console.log("Extracted image URL:", imageString);
-
-      return imageString;
-    } catch (e) {
-      console.error("Error parsing image URL:", e);
-      return null;
-    }
-  };
 
   const handlePost = async (data) => {
     setLoading(true);
@@ -159,6 +130,71 @@ export default function MajorsPage() {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      // Coba panggil endpoint API untuk menghapus item
+      const res = await axios.delete(
+        `http://localhost:3000/api/v1/major/delete/${id}`
+      );
+
+      // Cek respon dari server
+      if (res.status === 200) {
+        // Jika berhasil, filter data dan perbarui state
+        const updatedData = data.filter((item) => item.id !== id);
+        setData(updatedData);
+        toast.success("Data berhasil dihapus");
+        setEditModal(false);
+
+        // Log untuk memastikan penghapusan berhasil
+        console.log("Article successfully deleted.");
+      } else {
+        // Tangani respon yang tidak berhasil
+        console.error(
+          "Failed to delete the article. Server responded with status:",
+          res.status
+        );
+        alert("Gagal menghapus artikel. Silakan coba lagi.");
+      }
+    } catch (error) {
+      // Tangani kesalahan jaringan atau kesalahan lainnya
+      if (error.response) {
+        // Server merespons dengan status selain 2xx
+        console.error("Error deleting the article:", error.response.data);
+        alert(
+          `Gagal menghapus artikel: ${
+            error.response.data.message || "Silakan coba lagi."
+          }`
+        );
+      } else if (error.request) {
+        // Tidak ada respon dari server
+        console.error("No response received:", error.request);
+        alert("Tidak ada respon dari server. Silakan coba lagi.");
+      } else {
+        // Kesalahan lain
+        console.error("Error deleting the article:", error.message);
+        alert("Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.");
+      }
+    }
+  };
+
+  // const handleDelete = async (id) => {
+  //   try {
+  //     const res = await axios.delete(
+  //       `http://localhost:3000/api/v1/major/delete/${id}`
+  //     );
+  //     const updatedData = data.filter((item) => item.id !== id);
+  //     setData(updatedData);
+  //     toast.success("Data berhasil dihapus");
+  //     setEditModal(false);
+
+  //     // Tambahkan log untuk memastikan penghapusan berhasil
+  //     console.log("Article successfully deleted.");
+  //   } catch (error) {
+  //     console.error("Error deleting the article:", error);
+  //     alert("Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.");
+  //   }
+  // };
+
   return (
     <>
       <MajorsContainer
@@ -212,7 +248,7 @@ export default function MajorsPage() {
           title={"Informasi Bidang Keahlian"}
           data={editedData}
           offset={form.offset}
-          // handleDelete={handleDelete}
+          handleDelete={handleDelete}
           handleAction={handleEditData}
           setEditModal={setEditModal}
         />
