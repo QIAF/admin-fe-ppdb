@@ -42,7 +42,7 @@ export default function UserTable({
             type={"text"}
             placeholder="Cari nama siswa..."
             className={"rounded-4 ps-5 border-2 bg-green py-1"}
-            style={{ maxWidth: "20rem" }} // Set max width untuk input search agar tidak terlalu lebar
+            // style={{ maxWidth: "20rem" }} // Set max width untuk input search agar tidak terlalu lebar
           />
         </div>
         <div className="d-flex justify-content-end mt-3 mt-md-0">
@@ -68,8 +68,8 @@ export default function UserTable({
         className="table-responsive table-wrapper"
         style={{
           height: "fit-content",
-          minHeight: "13rem",
-          maxHeight: `calc(100vh - ${maxHeight ?? "14rem"})`,
+          // minHeight: "13rem",
+          // maxHeight: `calc(100vh - ${maxHeight ?? "14rem"})`,
         }}
       >
         <table className="table table-borderless table-striped align-middle">

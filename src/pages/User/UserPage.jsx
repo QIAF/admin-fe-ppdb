@@ -7,16 +7,11 @@ import axios from "axios";
 export default function UserPage() {
   const [data, setData] = useState([]);
   const [error, setIsError] = useState();
-  const [isPending, setIsPending] = useState();
+  const [isPending, setIsPending] = useState(true);
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/v1/studentData"
-        // {
-        //   headers: {
-        //     Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNCwidXNlcm5hbWUiOiJmYXJ6ZXQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWludXNlcnpldEBnbWFpbC5jb20iLCJpYXQiOjE3MTk5MDAyMzcsImV4cCI6MTcyMDE1OTQzN30.VflHkndAXwggjIgWOwc5CQIgA2sYfYZcaA5tUSY1kRI`,
-        //   },
-        // }
+        "https://be-ppdb-online-update.vercel.app/api/v1/studentData"
       );
       console.log("API Response:", response.data);
       setData(response.data.data.allStudentData); // Asumsi data berada di dalam results
@@ -31,6 +26,7 @@ export default function UserPage() {
   useEffect(() => {
     fetchData();
   }, []);
+  if (isPending) return <p>Loading...</p>;
   return (
     <UserTable
       thead={thead}

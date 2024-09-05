@@ -18,17 +18,16 @@ import "react-toastify/dist/ReactToastify.css";
 import Spinner from "../../components/Loader/Spinner";
 import { Input } from "../../components/UI/Input/Input";
 import { ErrMsg } from "../../components/Error/ErrMsg";
+import Cookies from "js-cookie";
 
 export default function ScoresPage() {
   const [editedData, setEditedData] = useState(null);
   const [editModal, setEditModal] = useState(false);
   const [addModal, setAddModal] = useState(false);
   const [offset, setOffset] = useState(null);
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, setIsPending] = useState(true);
   const [isError, setIsError] = useState(false);
   const [data, setData] = useState([]);
-  const [rank, setRank] = useState([]);
-
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -54,10 +53,20 @@ export default function ScoresPage() {
     });
     setEditModal(true);
   };
+  const token = Cookies.get("token");
+  console.log("Token untuk article:", token);
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/v1/studentData"
+        `https://be-ppdb-online-update.vercel.app/api/v1/studentData`,
+        config
       );
       const studentData = response.data.data?.allStudentData ?? [];
       const reportScores = response.data.data?.allReportScore ?? [];
@@ -135,8 +144,9 @@ export default function ScoresPage() {
 
     try {
       const res = await axios.patch(
-        `http://localhost:3000/api/v1/finalScore/update/${data.id}`, // Pastikan URL benar
-        formData
+        `https://be-ppdb-online-update.vercel.app/api/v1/finalScore/update/${data.id}`, // Pastikan URL benar
+        formData,
+        config
       );
       if (res.status === 200) {
         console.log("Data Terbaru:", res.data);
@@ -154,6 +164,8 @@ export default function ScoresPage() {
       setLoading(false);
     }
   };
+  if (isPending) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching data.</p>;
   return (
     <>
       <ScoresContainer
@@ -221,11 +233,9 @@ const ScoresModal = ({
   title,
   data,
   setEditModal,
-  forModal,
+
   loading,
   handleAction,
-  handleDelete,
-  offset,
 }) => {
   const initState = {
     id: data?.id ?? "",
@@ -243,7 +253,6 @@ const ScoresModal = ({
     // result_description: "",
   };
   const [isFormChanged, setIsFormChanged] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const { form, setForm, handleChange, errors, setErrors } = useForm(
     initState,
@@ -279,7 +288,7 @@ const ScoresModal = ({
         }}
       ></div>
       <div
-        className="modal"
+        className="modal fade show"
         tabIndex="-1"
         role="dialog"
         // aria-hidden="true"
@@ -353,8 +362,9 @@ const ScoresModal = ({
                       onChange={handleInput} // Memperbarui formData saat pilihan berubah
                     >
                       <option value="">Pilih Hasil</option>
-                      <option value="Tidak diterima">Tidak Diterima</option>
                       <option value="Diterima">Diterima</option>
+                      <option value="Dipertimbangkan">Dipertimbangkan</option>
+                      <option value="Tidak diterima">Tidak Diterima</option>
                     </select>
                   </div>
                 </div>

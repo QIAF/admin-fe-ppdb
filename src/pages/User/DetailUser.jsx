@@ -5,13 +5,12 @@ import { Link } from "react-router-dom";
 import ImageWithFallback from "../../components/Error/ImageWithFallback";
 import CustomModal from "../../components/UI/Modal/Modal";
 import Tranparent from "../../components/UI/Button/Tranparent";
-import backIcon from "../../assets/images/arrow-right.svg";
 import Button from "../../components/UI/Button/Button";
-import RowTable from "../../components/UI/Table/RowTable";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { formatDate } from "../../utils/validation";
+import Cookies from "js-cookie";
 
 export default function DetailUser() {
   const location = useLocation();
@@ -20,11 +19,45 @@ export default function DetailUser() {
   const [modalDelete, setModalDelete] = useState(false);
   const [loading, setLoading] = useState(false);
   const data = location.state?.data;
+  console.log(data);
+
+  const parseImageURL = (imageString) => {
+    try {
+      // Jika imageString bukan objek JSON yang valid, kita bisa menanganinya secara berbeda.
+      if (imageString.startsWith("{") && imageString.endsWith("}")) {
+        // Menghapus tanda kurung kurawal di sekitar string
+        imageString = imageString.slice(1, -1);
+      }
+
+      // Menghapus tanda kutip jika ada
+      imageString = imageString.replace(/"/g, "");
+
+      return imageString;
+    } catch (e) {
+      console.error("Error parsing image URL:", e);
+      return null;
+    }
+  };
+  const imageUrl = data?.student_picture
+    ? parseImageURL(data.student_picture)
+    : null;
+  console.log("Image URL:", imageUrl);
 
   const handleDelete = async () => {
+    const token = Cookies.get("token");
+    console.log("Token untuk article:", token);
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     try {
       const res = await axios.delete(
-        `http://localhost:3000/api/v1/studentData/delete/${data.id}`
+        `https://be-ppdb-online-update.vercel.app/api/v1/studentData/delete/${data.id}`,
+        config
       );
       navigate("/users");
       console.log("Data berhasil terhapus di API => ", res.data);
@@ -38,38 +71,36 @@ export default function DetailUser() {
     <>
       <section className="container-fluid detail-container">
         <div className="d-flex flex-column mt-3 gap-3 ">
-          <div className="d-flex flex-row align-items-center gap-3 ">
-            <Link
-              className="nav-link active p-0 text-body-secondary"
-              to={"/users"}
-            >
-              <img
-                src={backIcon}
-                alt="Bootstrap"
-                width={30}
-                height={30}
-                className="img-fluid"
-              />
-            </Link>
-            <h3 className="fs-2 mb-0 fw-semibold" style={{ fontWeight: 700 }}>
-              Detail Siswa
-            </h3>
+          <div className="d-flex flex-column align-items-center gap-3 ">
+            <h6 className="fs-4 mb-3 " style={{ fontWeight: 700 }}>
+              Data Siswa
+            </h6>
           </div>
-          <div className="d-flex flex-row flex-wrap gap-3 align-items-start custom-margin-left">
+          <div className="d-flex flex-row flex-wrap gap-4 align-items-left justify-content-center custom-margin-center">
             <ImageWithFallback
-              src={noImage}
-              fallback={noImage}
+              src={imageUrl}
+              fallback={imageUrl}
               alt="photo avatar"
               className="rounded-2 object-fit-cover "
-              style={{ maxWidth: "13.75rem", maxHeight: "16.625rem" }}
+              style={{ maxWidth: "6rem", maxHeight: "8rem" }}
             />
             <div className=" custom-margin-table">
-              <table className="table">
+              <table className="table table-borderless">
                 <tbody>
+                  <tr>
+                    <td>
+                      <b>1. Data Pribadi Calon Siswa</b>
+                    </td>
+                  </tr>
                   <tr>
                     <td>Nama Lengkap</td>
                     <td>:</td>
                     <td>{data?.student_name}</td>
+                  </tr>
+                  <tr>
+                    <td>NISN</td>
+                    <td>:</td>
+                    <td>{data?.nisn}</td>
                   </tr>
                   <tr>
                     <td>NIK</td>
@@ -137,7 +168,14 @@ export default function DetailUser() {
                     <td>:</td>
                     <td>{data?.student_hobby}</td>
                   </tr>
-
+                  <tr>
+                    <td colSpan={3} style={{ height: "1rem" }}></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>
+                      <b>2. Data Orang Tua Calon Siswa</b>
+                    </td>
+                  </tr>
                   <tr>
                     <td>Nama Ayah</td>
                     <td>:</td>
@@ -185,7 +223,14 @@ export default function DetailUser() {
                     <td>:</td>
                     <td>{data?.phoneNumber_house}</td>
                   </tr>
-
+                  <tr>
+                    <td colSpan={3} style={{ height: "1rem" }}></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>
+                      <b>3. Data Wali Calon Siswa</b>
+                    </td>
+                  </tr>
                   <tr>
                     <td>Nama Wali</td>
                     <td>:</td>
@@ -205,6 +250,14 @@ export default function DetailUser() {
                     <td>Pekerjaan</td>
                     <td>:</td>
                     <td>{data?.guardian_job}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3} style={{ height: "1rem" }}></td>
+                  </tr>
+                  <tr>
+                    <td colSpan={3}>
+                      <b>4. Data Asal Sekolah Calon Siswa</b>
+                    </td>
                   </tr>
                   <tr>
                     <td>Nama Sekolah Asal</td>
@@ -233,14 +286,12 @@ export default function DetailUser() {
                       {data?.major_choice1} {"dan"} {data?.major_choice2}
                     </td>
                   </tr>
-                  <tr>
-                    <td>NISN</td>
-                    <td>:</td>
-                    <td>{data?.nisn}</td>
-                  </tr>
                 </tbody>
               </table>
               <div style={{ marginTop: "2rem" }}></div>
+              <h6>
+                <b>5. Data Nilai Raport Calon Siswa</b>
+              </h6>
               <table
                 style={{ width: "100%" }}
                 className="table table-borderless table-striped mt-3"

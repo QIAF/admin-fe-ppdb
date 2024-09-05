@@ -3,6 +3,7 @@ import axios from "axios";
 import ResultContainer from "./ResultContainer";
 import RowTable from "../../components/UI/Table/RowTable";
 import { theadStudentPassed } from "../../utils/dataObj";
+import Cookies from "js-cookie";
 
 export default function ResultPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,9 +12,17 @@ export default function ResultPage() {
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
+    const token = Cookies.get("token");
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/v1/finalScore/studentPassed"
+        `https://be-ppdb-online-update.vercel.app/api/v1/finalScore/studentPassed`,
+        config
       );
       console.log("API Response:", response.data);
 
@@ -50,9 +59,8 @@ export default function ResultPage() {
     item.student_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isPending) return <p>Loading...</p>;
-  if (isError) return <p>Error fetching data.</p>;
-
+  if (isPending) return <div className="center-screen">Loading...</div>;
+  if (isError) return <div className="center-screen">Error fetching data.</div>;
   return (
     <>
       <ResultContainer

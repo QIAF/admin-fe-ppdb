@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import CustomModal from "../../components/UI/Modal/Modal";
 import useForm from "../../components/Hooks/UseForm";
+import Cookies from "js-cookie";
 import Spinner from "../../components/Loader/Spinner";
 
 const initState = {
@@ -25,12 +26,12 @@ export default function MajorsPage() {
   const [editModal, setEditModal] = useState(false);
   const [addModal, setAddModal] = useState(false);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [offset, setOffset] = useState(null);
-  const [error, setIsError] = useState();
-  const [isPending, setIsPending] = useState();
+  const [isError, setIsError] = useState(false);
+  const [isPending, setIsPending] = useState(true);
 
-  const { form, setForm, handleInput, loading, setLoading, handleChange } =
-    useForm(initState);
+  const { form, setForm, handleInput } = useForm(initState);
 
   const handleModal = (data, offset) => {
     setEditedData(data);
@@ -58,7 +59,9 @@ export default function MajorsPage() {
   };
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/major");
+      const res = await axios.get(
+        "https://be-ppdb-online-update.vercel.app/api/v1/major"
+      );
       console.log("API Response:", res.data);
       setData(res.data.data); // Asumsi data berada di dalam results
       setIsPending(false);
@@ -72,6 +75,16 @@ export default function MajorsPage() {
     fetchData();
   }, []);
 
+  const token = Cookies.get("token");
+  console.log("Token untuk article:", token);
+
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
   const handlePost = async (data) => {
     setLoading(true);
     const formData = dataMajor(data);
@@ -79,22 +92,22 @@ export default function MajorsPage() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/major/create",
+        `https://be-ppdb-online-update.vercel.app/api/v1/major/create`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        config
       );
       console.log("Response:", res);
       if (res.status === 201) {
         fetchData();
-        toast.success("Anda berhasil menambahkan criteria", { delay: 800 });
+        toast.success("Anda berhasil menambahkan data", { delay: 800 });
       } else {
-        toast.error("Terjadi kesalahan saat menambahkan criteria", {
+        toast.error("Terjadi kesalahan saat menambahkan data", {
           delay: 800,
         });
         console.error("Unexpected response status:", res.status);
       }
     } catch (error) {
-      toast.error("Anda gagal menambahkan criteria", { delay: 800 });
+      toast.error("Anda gagal menambahkan data", { delay: 800 });
       console.error("Error:", error);
     } finally {
       setAddModal(false);
@@ -109,9 +122,9 @@ export default function MajorsPage() {
 
     try {
       const res = await axios.patch(
-        `http://localhost:3000/api/v1/major/update/${data.id}`, // Pastikan URL benar
+        `https://be-ppdb-online-update.vercel.app/api/v1/major/update/${data.id}`, // Pastikan URL benar
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        config
       );
       if (res.status === 200) {
         console.log("Data Terbaru:", res.data);
@@ -134,7 +147,8 @@ export default function MajorsPage() {
     try {
       // Coba panggil endpoint API untuk menghapus item
       const res = await axios.delete(
-        `http://localhost:3000/api/v1/major/delete/${id}`
+        `https://be-ppdb-online-update.vercel.app/api/v1/major/delete/${id}`,
+        config
       );
 
       // Cek respon dari server
@@ -176,25 +190,8 @@ export default function MajorsPage() {
       }
     }
   };
-
-  // const handleDelete = async (id) => {
-  //   try {
-  //     const res = await axios.delete(
-  //       `http://localhost:3000/api/v1/major/delete/${id}`
-  //     );
-  //     const updatedData = data.filter((item) => item.id !== id);
-  //     setData(updatedData);
-  //     toast.success("Data berhasil dihapus");
-  //     setEditModal(false);
-
-  //     // Tambahkan log untuk memastikan penghapusan berhasil
-  //     console.log("Article successfully deleted.");
-  //   } catch (error) {
-  //     console.error("Error deleting the article:", error);
-  //     alert("Terjadi kesalahan saat menghapus artikel. Silakan coba lagi.");
-  //   }
-  // };
-
+  if (isPending) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching data.</p>;
   return (
     <>
       <MajorsContainer
@@ -210,20 +207,22 @@ export default function MajorsPage() {
           totalCol={5}
           renderItem={(data, index, offset) => {
             console.log("Rendering item:", data); // Log entire data object
-            // const imageUrl = parseImageURL(data?.major_picture); // Store parsed URL
-            // console.log("Image URL for data ID", data?.id, ":", imageUrl);
             const imageUrl = data?.major_picture
               ? parseImageURL(data.major_picture)
               : null;
 
             return (
               <tr
+                className="text-wrap cursor-pointer"
                 onClick={() => handleModal(data, offset)}
                 data-bs-toggle="modal"
-                className="text-nowrap cursor-pointer"
                 key={data?.id}
               >
-                <td>{data?.major_name}</td>
+                <td
+                  style={{ wordWrap: "break-word", overflowWrap: "break-word" }}
+                >
+                  {data?.major_name}
+                </td>
                 <td>{data?.major_description}</td>
                 <td>
                   {data?.major_picture ? (
@@ -232,7 +231,7 @@ export default function MajorsPage() {
                       alt={imageUrl}
                       width={100}
                       height="auto"
-                      style={{ maxWidth: "100px", height: "auto" }}
+                      style={{ maxWidth: "50px", maxHeight: "50px" }}
                     />
                   ) : (
                     <span>No Image</span>
@@ -251,6 +250,7 @@ export default function MajorsPage() {
           handleDelete={handleDelete}
           handleAction={handleEditData}
           setEditModal={setEditModal}
+          loading={loading}
         />
       )}
       {addModal && (
@@ -261,6 +261,7 @@ export default function MajorsPage() {
           setForm={setForm}
           data={form}
           forModal={"post"}
+          loading={loading}
           handleAction={handlePost}
           setEditModal={setAddModal}
         />
@@ -274,10 +275,10 @@ const MajorModal = ({
   data,
   setEditModal,
   forModal,
-  loading,
   handleAction,
   handleDelete,
   offset,
+  loading,
 }) => {
   let initState = {
     id: data?.id ?? "",
@@ -345,7 +346,6 @@ const MajorModal = ({
         className="modal"
         tabIndex="-1"
         role="dialog"
-        aria-hidden="true"
         style={{ display: "block", zIndex: "51" }}
       >
         <div className="modal-dialog modal-dialog-centered">
@@ -387,13 +387,13 @@ const MajorModal = ({
                     Deskripsi
                   </label>
                   <div className="col-sm-9">
-                    <input
-                      type="text"
+                    <textarea
                       className="form-control"
-                      id="major_description"
                       name="major_description"
                       value={form.major_description}
                       onChange={handleInputChange}
+                      maxLength={1000} // Sesuaikan dengan panjang maksimum yang diinginkan
+                      rows="5" // Sesuaikan dengan jumlah baris yang diinginkan
                     />
                     {/* <ErrMsg msg={errors.name} /> */}
                   </div>
@@ -409,20 +409,34 @@ const MajorModal = ({
                     className={"form-control"}
                     onChange={handleInputChange}
                   />
-                  {/* <ErrMsg msg={error.studentDocument} /> */}
                 </div>
               </form>
             </div>
 
             <div className="modal-footer">
               <div className="d-flex flex-row gap-3 justify-content-start w-100 align-items-center">
-                <Button
+                {/* <Button
                   disabled={!isFormChanged || loading}
                   onClick={handleSubmit}
                   style={{ width: "7.125rem" }}
                   className={"btn-primary text-white fw-semibold"}
                 >
                   {loading ? <Spinner /> : "Simpan"}
+                </Button> */}
+                <Button
+                  disabled={!isFormChanged || loading} // Gunakan loading untuk menonaktifkan tombol saat submit
+                  onClick={handleSubmit}
+                  style={{ width: "7.125rem" }}
+                  className={"btn-primary text-white fw-semibold"}
+                >
+                  {loading ? (
+                    <div className="d-flex align-items-center">
+                      <Spinner /> {/* Komponen Spinner */}
+                      <span className="ms-2">Loading...</span>
+                    </div>
+                  ) : (
+                    "Simpan"
+                  )}
                 </Button>
                 <Button
                   disabled={forModal === "post" || loading}

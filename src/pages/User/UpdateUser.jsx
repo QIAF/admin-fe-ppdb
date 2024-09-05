@@ -7,11 +7,14 @@ import Button from "../../components/UI/Button/Button";
 import Footer from "../../components/Footer/Footer";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
+import Spinner from "../../components/Loader/Spinner";
 
 export default function UpdateUser() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
+  const [loading, setLoading] = useState();
   const idUser = state?.id;
   console.log("Location State:", state);
   console.log("User ID:", idUser);
@@ -146,17 +149,30 @@ export default function UpdateUser() {
     english5: "",
   };
 
-  const { form, setForm, errors, setErrors, handleInput, setLoading, loading } =
-    useForm(initialState, initialError);
+  const { form, setForm, errors, setErrors, handleInput } = useForm(
+    initialState,
+    initialError
+  );
   const [isFormChanged, setIsFormChanged] = useState(false);
 
   const handleUpdateData = async (data) => {
+    setLoading(true);
+    const token = Cookies.get("token");
+    console.log("Token untuk article:", token);
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     const formData = dataStudent(data);
     console.log("Form Data:", formData);
     try {
       const res = await axios.patch(
-        `http://localhost:3000/api/v1/studentData/update/${idUser}`,
-        formData
+        `https://be-ppdb-online-update.vercel.app/api/v1/studentData/update/${idUser}`,
+        formData,
+        config
       );
       if (res.status === 200) {
         console.log("Data Terbaru:", res.data);
@@ -168,6 +184,7 @@ export default function UpdateUser() {
         "Kesalahan saat memperbarui data:",
         error.response?.data || error.message
       );
+      setLoading(false);
       toast.error("Anda gagal mengubah nilai", { delay: 800 });
     }
   };
@@ -225,38 +242,24 @@ export default function UpdateUser() {
                       htmlFor="student_gender"
                       className="col col-form-label"
                     >
-                      Jenis kelamin
+                      Jenis kelamin{" "}
+                      {!form.student_gender && (
+                        <span className="required">*</span>
+                      )}
                     </label>
-                    <div className="col">
-                      <Input
-                        type={"radio"}
-                        id={"Laki-laki"}
-                        className={"form-check-input"}
+                    <div className="col-sm-8">
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_gender"
                         name="student_gender"
-                        value="Laki-laki"
+                        value={form.student_gender}
                         onChange={handleInput}
-                      />
-                      <label className="form-check-label" htmlFor="inlineMale">
-                        {" "}
-                        &nbsp; Laki-laki
-                      </label>
-                    </div>
-                    <div className="col">
-                      <Input
-                        type={"radio"}
-                        id={"Perempuan"}
-                        className={"form-check-input"}
-                        name="student_gender"
-                        value="Perempuan"
-                        //   checked={form.student_gender === "Perempuan"}
-                        onChange={handleInput}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="inlineFemale"
                       >
-                        &nbsp; Perempuan
-                      </label>
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -331,17 +334,27 @@ export default function UpdateUser() {
                       htmlFor="student_distance"
                       className="col col-form-label"
                     >
-                      Jarak rumah ke sekolah
+                      Jarak dari rumah ke SMK 3 Muhammadiyah Yogyakarta
+                      {!form.student_distance && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"student_distance"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_distance"
                         name="student_distance"
-                        value={form.student_distance}
-                        onChange={handleInput}
-                      />
+                        value={form.student_distance} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≤ 1 KM">≤ 1 KM</option>
+                        <option value="≤ 2 KM">≤ 2 KM</option>
+                        <option value="≤ 3 KM">≤ 3 KM</option>
+                        <option value="≤ 4 KM">≤ 4 KM</option>
+                        <option value="≥ 4 KM">≥ 4 KM</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -445,17 +458,22 @@ export default function UpdateUser() {
                   </div>
                   <div className="row mb-3">
                     <label htmlFor="student_kps" className="col col-form-label">
-                      student_kps
+                      KPS,PKH/PIP/KMS Kota{" "}
+                      {!form.student_kps && <span className="required">*</span>}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"student_kps"}
-                        name={"student_kps"}
-                        value={form.student_kps}
-                        onChange={handleInput}
-                      />
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_kps"
+                        name="student_kps"
+                        value={form.student_kps} // Menyinkronkan nilai select dengan formData
+                        onChange={handleInput} // Memperbarui formData saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -624,20 +642,31 @@ export default function UpdateUser() {
                   </div>
                   <div className="row mb-3">
                     <label
-                      htmlFor="inputfather_job"
+                      htmlFor="father_income"
                       className="col col-form-label"
                     >
-                      Pendapatan perbulan
+                      Pendapatan ayah perbulan
+                      {!form.father_income && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"father_income"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="father_income"
                         name="father_income"
-                        value={form.father_income}
-                        onChange={handleInput}
-                      />
+                        value={form.father_income} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≥ Rp 500.000">≥ Rp 500.000</option>
+                        <option value="≥ Rp 1.000.000">≥ Rp 1.000.000</option>
+                        <option value="≥ Rp 2.000.000">≥ Rp 2.000.000</option>
+                        <option value="≥ Rp 3.000.000">≥ Rp 3.000.000</option>
+                        <option value="≥ Rp 4.000.000">≥ Rp 4.000.000</option>
+                        <option value="≥ Rp 5.000.000">≥ Rp 5.000.000</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -660,20 +689,31 @@ export default function UpdateUser() {
                   </div>
                   <div className="row mb-3">
                     <label
-                      htmlFor="inputmother_job"
+                      htmlFor="mother_income"
                       className="col col-form-label"
                     >
-                      Pendapatan Perbulan
+                      Pendapatan ibu perbulan
+                      {!form.mother_income && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"mother_income"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="mother_income"
                         name="mother_income"
-                        value={form.mother_income}
-                        onChange={handleInput}
-                      />
+                        value={form.mother_income} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≥ Rp 500.000">≥ Rp 500.000</option>
+                        <option value="≥ Rp 1.000.000">≥ Rp 1.000.000</option>
+                        <option value="≥ Rp 2.000.000">≥ Rp 2.000.000</option>
+                        <option value="≥ Rp 3.000.000">≥ Rp 3.000.000</option>
+                        <option value="≥ Rp 4.000.000">≥ Rp 4.000.000</option>
+                        <option value="≥ Rp 5.000.000">≥ Rp 5.000.000</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -774,16 +814,23 @@ export default function UpdateUser() {
                       className="col col-form-label"
                     >
                       Status Sekolah
+                      {!form.school_status && (
+                        <span className="required">*</span>
+                      )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"school_status"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="school_status"
                         name="school_status"
                         value={form.school_status}
                         onChange={handleInput}
-                      />
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="Negeri">Negeri</option>
+                        <option value="Swasta">Swasta</option>
+                      </select>
                     </div>
                   </div>
                   <div className="row mb-3">
@@ -813,7 +860,7 @@ export default function UpdateUser() {
                     </label>
                     <div className="col-sm-8">
                       <Input
-                        type={"number"}
+                        type={"text"}
                         className={"form-control"}
                         id={"ijazah_number"}
                         name="ijazah_number"
@@ -1053,12 +1100,27 @@ export default function UpdateUser() {
               <div className="footer  mt-5">
                 <div className="d-flex flex-row justify-content-center align-items-center gap-3 ">
                   <Button
+                    // Nonaktifkan tombol jika form belum diubah atau loading
+                    type="submit"
+                    className={"btn-primary text-white fw-semibold"}
+                    onClick={() => handleUpdateData(form)}
+                  >
+                    {loading ? (
+                      <div className="d-flex align-items-center">
+                        <Spinner /> {/* Komponen Spinner */}
+                        <span className="ms-2">Loading...</span>
+                      </div>
+                    ) : (
+                      "Simpan"
+                    )}
+                  </Button>
+                  {/* <Button
                     type="submit"
                     className={"btn-primary text-white fw-semibold"}
                     onClick={() => handleUpdateData(form)}
                   >
                     Simpan
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>

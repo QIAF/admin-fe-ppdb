@@ -49,7 +49,7 @@ export default function MajorsContainer({
       )}
 
       <div
-        className="table-wrapper"
+        className="table align-middle"
         style={{
           height: "fit-content",
           minHeight: "13rem",

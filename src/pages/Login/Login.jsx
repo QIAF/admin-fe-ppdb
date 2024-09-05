@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import axios from "axios"; // Ensure axios is imported
+import { useNavigate } from "react-router";
+import axios from "axios";
 import { loginData, validateLogin } from "../../utils/validation";
 import Button from "../../components/UI/Button/Button";
 import { Input } from "../../components/UI/Input/Input";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 export default function Login({ title, props }) {
   const [error, setError] = useState({});
@@ -24,23 +25,26 @@ export default function Login({ title, props }) {
     });
     validateLogin({ ...form, [name]: value }, setError); // Validate the form with updated values
   };
+
   const handlePost = async (data) => {
     const formLogin = loginData(data);
     console.log(formLogin);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/auth/login",
+        "https://be-ppdb-online-update.vercel.app/api/v1/auth/login",
         formLogin
       );
 
       if (res.status === 200) {
-        const decoded = jwtDecode(res.data.token);
+        const token = res.data.token;
+        const decoded = jwtDecode(token);
         console.log("decode", decoded);
 
         if (decoded && decoded.user_role === "admin") {
-          const token = res.data.token;
-          localStorage.setItem("token", token);
-          console.log("Token successfully saved:", token);
+          // Simpan token di cookie
+          Cookies.set("token", token, { expires: 7, path: "/" });
+          console.log("Token successfully saved in cookie:", token);
+
           toast.success("Berhasil melakukan login", {
             delay: 800,
           });
@@ -55,31 +59,6 @@ export default function Login({ title, props }) {
       console.error("Failed to log in, please enter valid data", error);
     }
   };
-
-  // const handlePost = async (data) => {
-  //   const formLogin = loginData(data);
-  //   try {
-  //     const res = await axios.post(
-  //       "http://localhost:3000/api/v1/auth/login",
-  //       formLogin
-  //     );
-  //     if (res.status === 200) {
-  //       const decoded = jwtDecode(res.data.token);
-  //       if (decoded && decoded.role === "admin") {
-  //         localStorage.setItem("token", token);
-  //         console.log("Token successfully saved:", token);
-  //         toast.success("Berhasil melakukan login", {
-  //           delay: 800,
-  //         });
-  //         navigate("/dashboard");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error("user_number atau password tidak valid", { delay: 300 });
-  //     console.error("Failed to log in, please enter valid data", error);
-  //   }
-  // };
-
   useEffect(() => {
     if (props && props.nextPage) {
       const timerId = setTimeout(() => navigate(props.nextPage), 300);

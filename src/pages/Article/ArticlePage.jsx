@@ -15,6 +15,7 @@ import CustomModal from "../../components/UI/Modal/Modal";
 import { Input } from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 import Spinner from "../../components/Loader/Spinner";
+import Cookies from "js-cookie";
 import "./article.css";
 
 export default function ArticlePage() {
@@ -44,10 +45,22 @@ export default function ArticlePage() {
     setEditModal(true);
   };
 
+  const token = Cookies.get("token");
+  console.log("Token untuk article:", token);
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
   const fetchData = async () => {
     setIsPending(true);
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/article");
+      const res = await axios.get(
+        "https://be-ppdb-online-update.vercel.app/api/v1/article"
+      );
       setData(res.data.data);
       setIsPending(false);
     } catch (error) {
@@ -64,26 +77,29 @@ export default function ArticlePage() {
     setLoading(true);
     const formData = dataArticle(data);
     console.log("Form Data to be sent:", formData);
-
     try {
       const res = await axios.post(
-        `http://localhost:3000/api/v1/article/create`,
-        formData
+        `https://be-ppdb-online-update.vercel.app/api/v1/article/create`,
+        formData,
+        config
       );
-      console.log("Response:", res);
-
       if (res.status === 200) {
         fetchData();
         toast.success("Anda berhasil menambahkan data", { delay: 400 });
       } else {
-        toast.error("Terjadi kesalahan saat menambahkan criteria", {
+        toast.error("Terjadi kesalahan saat menambahkan data", {
           delay: 800,
         });
         console.error("Unexpected response status:", res.status);
       }
     } catch (error) {
-      toast.error("Anda gagal menambahkan criteria", { delay: 800 });
-      console.error("Error:", error);
+      if (error.response && error.response.status === 403) {
+        toast.error("Anda tidak memiliki izin untuk mengakses halaman ini", {
+          delay: 800,
+        });
+      } else {
+        toast.error("Anda gagal menambahkan pengumuman", { delay: 800 });
+      }
     } finally {
       setAddModal(false);
       setLoading(false);
@@ -101,15 +117,22 @@ export default function ArticlePage() {
 
     try {
       const res = await axios.patch(
-        `http://localhost:3000/api/v1/article/update/${data.id}`,
-        formData
+        `https://be-ppdb-online-update.vercel.app/api/v1/article/update/${data.id}`,
+        formData,
+        config
       );
       if (res.status === 200) {
         fetchData();
         toast.success("Anda berhasil mengubah nilai", { delay: 800 });
       }
     } catch (error) {
-      toast.error("Anda gagal mengubah nilai", { delay: 800 });
+      if (error.response && error.response.status === 403) {
+        toast.error("Anda tidak memiliki izin untuk mengakses halaman ini", {
+          delay: 800,
+        });
+      } else {
+        toast.error("Anda gagal menambahkan pengumuman", { delay: 800 });
+      }
     } finally {
       setEditModal(false);
       setLoading(false);
@@ -119,7 +142,8 @@ export default function ArticlePage() {
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(
-        `http://localhost:3000/api/v1/article/delete/${id}`
+        `https://be-ppdb-online-update.vercel.app/api/v1/article/delete/${id}`,
+        config
       );
       const updatedData = data.filter((item) => item.id !== id);
       setData(updatedData);
@@ -311,7 +335,6 @@ const ArticleModal = ({
                   <div className="col-sm-9">
                     <textarea
                       className="form-control"
-                      id="article_description"
                       name="article_description"
                       value={form.article_description}
                       onChange={handleInput}

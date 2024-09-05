@@ -4,11 +4,11 @@ import { thead } from "../../utils/dataObj";
 import UserTable from "./UserTable";
 import RowTable from "../../components/UI/Table/RowTable";
 import { useNavigate } from "react-router";
-import Footer from "../../components/Footer/Footer";
+import Cookies from "js-cookie";
 
 export default function User() {
   const navigate = useNavigate();
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, setIsPending] = useState(true);
   const [isError, setIsError] = useState(false);
 
   const [filteredData, setFilteredData] = useState([]);
@@ -16,14 +16,19 @@ export default function User() {
 
   const [data, setData] = useState([]);
   const fetchData = async () => {
+    const token = Cookies.get("token");
+    console.log("Token untuk article:", token);
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/v1/studentData"
-        // {
-        //   headers: {
-        //     Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNCwidXNlcm5hbWUiOiJmYXJ6ZXQiLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWludXNlcnpldEBnbWFpbC5jb20iLCJpYXQiOjE3MTk5MDAyMzcsImV4cCI6MTcyMDE1OTQzN30.VflHkndAXwggjIgWOwc5CQIgA2sYfYZcaA5tUSY1kRI`,
-        //   },
-        // }
+        `https://be-ppdb-online-update.vercel.app/api/v1/studentData`,
+        config
       );
       const studentData = response.data.data?.allStudentData ?? [];
       const reportScores = response.data.data?.allReportScore ?? [];
@@ -79,6 +84,8 @@ export default function User() {
       state: { data: userData, offset: offset },
     });
   };
+  if (isPending) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching data.</p>;
 
   return (
     <>

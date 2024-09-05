@@ -8,13 +8,15 @@ import { toast } from "react-toastify";
 import "./user.css";
 import Footer from "../../components/Footer/Footer";
 import { ErrMsg } from "../../components/Error/ErrMsg";
+import Cookies from "js-cookie";
+import Spinner from "../../components/Loader/Spinner";
 
 export default function CreateUser() {
   const navigate = useNavigate();
   const [error, setError] = useState({});
-
+  const [loading, setLoading] = useState();
   const [form, setForm] = useState(() => {
-    const savedData = localStorage.getItem("form");
+    const savedData = Cookies.get("form");
     return savedData
       ? JSON.parse(savedData)
       : {
@@ -85,7 +87,7 @@ export default function CreateUser() {
           english5: "",
           interview_score: 1,
           health_score: 1,
-
+          student_picture: "",
           studentDocument: "",
         };
   });
@@ -108,6 +110,7 @@ export default function CreateUser() {
   };
 
   const handleCreate = async () => {
+    setLoading(true);
     const dataToSend = dataStudent(form);
 
     const formDataToSend = new FormData();
@@ -116,7 +119,7 @@ export default function CreateUser() {
     }
 
     if (validateStudentData(form, setError)) {
-      const token = localStorage.getItem("token");
+      const token = Cookies.get("token");
       console.log("Token untuk request:", token);
       const config = {
         headers: {
@@ -128,7 +131,7 @@ export default function CreateUser() {
       try {
         // Kirim permintaan ke server
         const res = await axios.post(
-          "http://localhost:3000/api/v1/studentData/create",
+          "https://be-ppdb-online-update.vercel.app/api/v1/studentData/create",
           formDataToSend,
           config
         );
@@ -137,27 +140,33 @@ export default function CreateUser() {
           toast.success("Berhasil menambahkan data", { delay: 800 });
           navigate("/users");
 
-          localStorage.removeItem("form");
+          Cookies.remove("form");
         }
       } catch (error) {
-        // Menangkap dan mencetak pesan error secara lebih mendetail
-        toast.error("Gagal menambahkan data", { delay: 800 });
-
         // Jika server mengirim response error
         if (error.response) {
           console.error("Error Data:", error.response.data);
           console.error("Error Status:", error.response.status);
           console.error("Error Headers:", error.response.headers);
+        }
+        if (
+          error.response.data.message ===
+          "You have already created student data. You cannot create more than one entry."
+        ) {
+          toast.error("NIsn. Anda tidak bisa membuat lebih dari satu entri.", {
+            delay: 800,
+          });
         } else if (error.request) {
-          // Jika tidak ada response dari server
           console.error("Tidak ada response dari server:", error.request);
         } else {
-          // Jika ada sesuatu yang salah dalam pengaturan permintaan
           console.error("Error Pengaturan Permintaan:", error.message);
         }
+      } finally {
+        setLoading(false); // Menandakan bahwa proses loading telah selesai
       }
     } else {
       alert("Data belum lengkap");
+      setLoading(false);
     }
   };
 
@@ -208,7 +217,7 @@ export default function CreateUser() {
                     </label>
                     <div className="col-sm-8 ">
                       <Input
-                        type={"text"}
+                        type={"number"}
                         className={"form-control"}
                         id={"student_card_number"}
                         name="student_card_number"
@@ -351,20 +360,27 @@ export default function CreateUser() {
                       htmlFor="student_distance"
                       className="col col-form-label"
                     >
-                      Jarak rumah ke sekolah{" "}
+                      Jarak dari rumah ke SMK 3 Muhammadiyah Yogyakarta
                       {!form.student_distance && (
                         <span className="required">*</span>
                       )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"student_distance"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="student_distance"
                         name="student_distance"
-                        value={form.student_distance}
-                        onChange={handleInput}
-                      />
+                        value={form.student_distance} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≤ 1 KM">≤ 1 KM</option>
+                        <option value="≤ 2 KM">≤ 2 KM</option>
+                        <option value="≤ 3 KM">≤ 3 KM</option>
+                        <option value="≤ 4 KM">≤ 4 KM</option>
+                        <option value="≥ 4 KM">≥ 4 KM</option>
+                      </select>
                       <ErrMsg msg={error.student_distance} />
                     </div>
                   </div>
@@ -388,7 +404,6 @@ export default function CreateUser() {
                         onChange={handleInput} // Memperbarui form saat pilihan berubah
                       >
                         <option value="">Pilih salah satu</option>{" "}
-                        {/* Opsi default untuk mendorong pilihan */}
                         <option value="Islam">Islam</option>
                         <option value="Kristen">Kristen</option>
                         <option value="Katolik">Katolik</option>
@@ -502,9 +517,8 @@ export default function CreateUser() {
                         onChange={handleInput} // Memperbarui formData saat pilihan berubah
                       >
                         <option value="">Pilih salah satu</option>{" "}
-                        {/* Opsi default untuk mendorong pilihan */}
-                        <option value="Ya">Tidak</option>
-                        <option value="Tidak">Ya</option>
+                        <option value="Ya">Ya</option>
+                        <option value="Tidak">Tidak</option>
                       </select>
                       <ErrMsg msg={error.student_child} />
                     </div>
@@ -706,25 +720,34 @@ export default function CreateUser() {
                       <ErrMsg msg={error.father_job} />
                     </div>
                   </div>
+
                   <div className="row mb-3">
                     <label
-                      htmlFor="inputfather_job"
+                      htmlFor="father_income"
                       className="col col-form-label"
                     >
-                      Pendapatan ayah perbulan{" "}
+                      Pendapatan ayah perbulan
                       {!form.father_income && (
                         <span className="required">*</span>
                       )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"father_income"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="father_income"
                         name="father_income"
-                        value={form.father_income}
-                        onChange={handleInput}
-                      />
+                        value={form.father_income} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≥ Rp 500.000">≥ Rp 500.000</option>
+                        <option value="≥ Rp 1.000.000">≥ Rp 1.000.000</option>
+                        <option value="≥ Rp 2.000.000">≥ Rp 2.000.000</option>
+                        <option value="≥ Rp 3.000.000">≥ Rp 3.000.000</option>
+                        <option value="≥ Rp 4.000.000">≥ Rp 4.000.000</option>
+                        <option value="≥ Rp 5.000.000">≥ Rp 5.000.000</option>
+                      </select>
                       <ErrMsg msg={error.father_income} />
                     </div>
                   </div>
@@ -750,23 +773,31 @@ export default function CreateUser() {
                   </div>
                   <div className="row mb-3">
                     <label
-                      htmlFor="inputmother_job"
+                      htmlFor="mother_income"
                       className="col col-form-label"
                     >
-                      Pendapatan Ibu Perbulan{" "}
+                      Pendapatan ibu perbulan
                       {!form.mother_income && (
                         <span className="required">*</span>
                       )}
                     </label>
                     <div className="col-sm-8">
-                      <Input
-                        type={"text"}
-                        className={"form-control"}
-                        id={"mother_income"}
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        id="mother_income"
                         name="mother_income"
-                        value={form.mother_income}
-                        onChange={handleInput}
-                      />
+                        value={form.mother_income} // Menyinkronkan nilai select dengan form
+                        onChange={handleInput} // Memperbarui form saat pilihan berubah
+                      >
+                        <option value="">Pilih salah satu</option>{" "}
+                        <option value="≥ Rp 500.000">≥ Rp 500.000</option>
+                        <option value="≥ Rp 1.000.000">≥ Rp 1.000.000</option>
+                        <option value="≥ Rp 2.000.000">≥ Rp 2.000.000</option>
+                        <option value="≥ Rp 3.000.000">≥ Rp 3.000.000</option>
+                        <option value="≥ Rp 4.000.000">≥ Rp 4.000.000</option>
+                        <option value="≥ Rp 5.000.000">≥ Rp 5.000.000</option>
+                      </select>
                       <ErrMsg msg={error.mother_income} />
                     </div>
                   </div>
@@ -889,7 +920,6 @@ export default function CreateUser() {
                         onChange={handleInput}
                       >
                         <option value="">Pilih salah satu</option>{" "}
-                        {/* Opsi default untuk mendorong pilihan */}
                         <option value="Negeri">Negeri</option>
                         <option value="Swasta">Swasta</option>
                       </select>
@@ -931,7 +961,7 @@ export default function CreateUser() {
                     </label>
                     <div className="col-sm-8">
                       <Input
-                        type={"number"}
+                        type={"text"}
                         className={"form-control"}
                         id={"ijazah_number"}
                         name="ijazah_number"
@@ -948,7 +978,7 @@ export default function CreateUser() {
                     </label>
                     <div className="col-sm-8">
                       <Input
-                        type={"text"}
+                        type={"number"}
                         className={"form-control"}
                         id={"nisn"}
                         name="nisn"
@@ -981,7 +1011,6 @@ export default function CreateUser() {
                         onChange={handleInput} // Memperbarui formData saat pilihan berubah
                       >
                         <option value="">Pilihan pertama</option>{" "}
-                        {/* Opsi default untuk mendorong pilihan */}
                         <option value="Teknik Kendaraan">
                           Teknik Kendaraan
                         </option>
@@ -1026,8 +1055,7 @@ export default function CreateUser() {
                         value={form.major_choice2} // Menyinkronkan nilai select dengan formData
                         onChange={handleInput} // Memperbarui formData saat pilihan berubah
                       >
-                        <option value="">Pilihan Kedua</option>{" "}
-                        {/* Opsi default untuk mendorong pilihan */}
+                        <option value="">Pilihan Kedua</option>
                         <option value="Teknik Kendaraan">
                           Teknik Kendaraan
                         </option>
@@ -1053,24 +1081,47 @@ export default function CreateUser() {
                       <ErrMsg msg={error.major_choice2} />
                     </div>
                   </div>
-                  <h5 style={{ marginTop: "50px", marginBottom: "30px" }}>
-                    Upload Dokumen
-                  </h5>
+
+                  <div className="row mb-3">
+                    <label
+                      htmlFor="student_picture"
+                      className="col col-form-label"
+                    >
+                      Upload foto formal siswa 3x4
+                      {!form.student_picture && (
+                        <span className="required">*</span>
+                      )}
+                    </label>
+                    <div className="col-sm-8">
+                      <Input
+                        type={"file"}
+                        id="student_picture"
+                        name="student_picture"
+                        className={"form-control"}
+                        onChange={handleFilePdf}
+                        multiple={false}
+                      />
+                      <ErrMsg msg={error.student_picture} />
+                    </div>
+                  </div>
                   <div className="mb-3">
                     <label htmlFor="studentDocument" className="form-label">
                       <b>
-                        Siswa diwajibkan untuk mengunggah dokumen PDF dengan
-                        format nama file menggunakan Nama Lengkap Anda:{" "}
+                        Siswa diwajibkan untuk mengunggah semua persyaratan
+                        dalam satu dokumen PDF dengan format nama file
+                        menggunakan Nama Lengkap Anda. Persyaratan yang harus
+                        diunggah adalah sebagai berikut:
                         {!form.studentDocument && (
                           <span className="required">*</span>
                         )}
                       </b>
-                      <br /> <br />
-                      1.Scan/foto Kartu Keluarga <br />
-                      2. Scan/foto Akta Kelahiran <br />
-                      3. Sertifikat Prestasi <br />
-                      4. Surat Keterangan Lulus <br />
-                      5. Ijazah SMP <br />
+                      <br />
+                      <br />
+                      <small> 1. Scan Kartu Keluarga </small> <br />
+                      <small>2. Scan Akta Kelahiran </small> <br />
+                      <small>3. Sertifikat Prestasi </small> <br />
+                      <small>4. Surat Keterangan Lulus </small> <br />
+                      <small>5. Ijazah SMP </small> <br />
                       <br />
                       Contoh format nama file: Nama_Lengkap_Siswa.pdf <br />{" "}
                       Pastikan semua dokumen yang diunggah jelas dan terbaca
@@ -1348,12 +1399,20 @@ export default function CreateUser() {
               <div className="footer  mt-5">
                 <div className="d-flex flex-row justify-content-center align-items-center gap-3 ">
                   <Button
+                    // Nonaktifkan tombol jika form belum diubah atau loading
                     type="submit"
                     className={"btn-primary text-white fw-semibold"}
                     onClick={() => handleCreate(form)}
                     error={error}
                   >
-                    Simpan
+                    {loading ? (
+                      <div className="d-flex align-items-center">
+                        <Spinner /> {/* Komponen Spinner */}
+                        <span className="ms-2">Loading...</span>
+                      </div>
+                    ) : (
+                      "Simpan"
+                    )}
                   </Button>
                 </div>
               </div>

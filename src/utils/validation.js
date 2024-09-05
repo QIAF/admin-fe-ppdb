@@ -115,6 +115,9 @@ export const validateStudentData = (form, setError) => {
     english4: "",
     english5: "",
 
+    student_picture: "",
+    studentDocument: "",
+
     interview_score: "",
     health_score: "",
   };
@@ -345,6 +348,10 @@ export const validateStudentData = (form, setError) => {
     valid = false;
   }
 
+  if (!form.student_picture) {
+    newErrors.student_picture = "wajib diisi";
+    valid = false;
+  }
   if (!form.studentDocument) {
     newErrors.studentDocument = "wajib diisi";
     valid = false;
@@ -362,7 +369,6 @@ export const formatDate = (isoString) => {
 
   return `${day}-${month}-${year}`;
 };
-
 const isoString = "2024-09-12T00:00:00.000Z";
 const formattedDate = formatDate(isoString);
 console.log(formattedDate); // Output: 12-09-2024
@@ -434,6 +440,9 @@ export const dataStudent = (form) => {
     english3: form.english3,
     english4: form.english4,
     english5: form.english5,
+
+    student_picture: form.student_picture,
+    studentDocument: form.studentDocument,
 
     health_score: Number(form.health_score) || 3,
     interview_score: Number(form.interview_score) || 3,

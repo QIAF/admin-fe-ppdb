@@ -11,13 +11,15 @@ import LogoutIcon from "../../assets/images/Icon-Lg.svg";
 import Logoutlg from "../../assets/images/logout-large.svg";
 import LogoSmk from "../../assets/images/logo-smk.svg";
 import Button from "../UI/Button/Button";
+import Cookies from "js-cookie";
 
 export default function Sidebar() {
   const [modal, setModal] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    Cookies.remove("token");
+    // localStorage.removeItem("token");
     navigate("/");
   };
   return (

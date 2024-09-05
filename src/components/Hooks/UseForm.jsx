@@ -44,22 +44,6 @@ export default function useForm(initialState, initialError) {
     }));
   };
 
-  // const handleInputChange = (e) => {
-  //   const { id, value } = e.target;
-  //   const [key, criteria_name] = id.split(".");
-
-  //   setForm((prevForm) => ({
-  //     ...prevForm,
-  //     criteriaValues: {
-  //       ...prevForm.criteriaValues,
-  //       [criteria_name]: {
-  //         ...prevForm.criteriaValues[criteria_name],
-  //         calculation: value,
-  //       },
-  //     },
-  //   }));
-  // };
-
   return {
     form,
     setForm,
