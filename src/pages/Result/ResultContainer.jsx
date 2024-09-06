@@ -164,9 +164,9 @@ export default function ResultContainer({
   };
 
   return (
-    <div className={`rounded-4 p-4 ${className} mt-4`}>
-      <div className="d-flex flex-row justify-content-between align-items-center mb-5">
-        <h3 className="card-title text-nowrap fs-5 fw-semibold">
+    <div className={`table-responsive rounded-4 p-4 ${className} mt-4`}>
+      <div className="d-flex flex-row justify-content-between align-items-center mb-4">
+        <h3 className="card-title text-nowrap fs-2 fw-semibold">
           Rekapitulasi hasil akhir seleksi
         </h3>
         <div className="position-relative mt-3 mt-md-0">

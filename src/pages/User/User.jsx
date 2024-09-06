@@ -112,7 +112,7 @@ export default function User() {
                 key={index}
               >
                 {/* <td>{data?.user_id}</td> */}
-                <td>{data?.id}</td>
+                <td>{index + 1}</td>
                 <td>{data?.nisn}</td>
                 <td>{data?.student_name}</td>
                 <td>{data?.student_gender}</td>
