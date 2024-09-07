@@ -18,7 +18,7 @@ export default function RoutesPage() {
   return (
     <>
       <Routes>
-        {/* <Route path="/" element={<Login />} /> */}
+        <Route path="/" element={<Login />} />
         {/* <Route element={<PrivateRoute />}> */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
