@@ -21,7 +21,7 @@ export default function RoutesPage() {
         {/* <Route path="/" element={<Login />} /> */}
         {/* <Route element={<PrivateRoute />}> */}
         <Route element={<Layout />}>
-          <Route path="/" element={<Login />} />
+          {/* <Route path="/" element={<Login />} /> */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<User />} />
           <Route path="/users/detailUser/:id" element={<DetailUser />} />
