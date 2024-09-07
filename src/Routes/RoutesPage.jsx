@@ -18,21 +18,20 @@ export default function RoutesPage() {
   return (
     <>
       <Routes>
-        {/* <Route path="/" element={<Login />} /> */}
-        {/* <Route element={<PrivateRoute />}> */}
-        <Route element={<Layout />}>
-          {/* <Route path="/" element={<Login />} /> */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/users" element={<User />} />
-          <Route path="/users/detailUser/:id" element={<DetailUser />} />
-          <Route path="/users/createUser" element={<CreateUser />} />
-          <Route path="/users/updateUser/:id" element={<UpdateUser />} />
-          <Route path="/scores" element={<ScoresPage />} />
-          <Route path="/finalResults" element={<ResultPage />} />
-          <Route path="/majors" element={<MajorsPage />} />
-          <Route path="/articles" element={<ArticlePage />} />
+        <Route path="/" element={<Login />} />
+        <Route element={<PrivateRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users" element={<User />} />
+            <Route path="/users/detailUser/:id" element={<DetailUser />} />
+            <Route path="/users/createUser" element={<CreateUser />} />
+            <Route path="/users/updateUser/:id" element={<UpdateUser />} />
+            <Route path="/scores" element={<ScoresPage />} />
+            <Route path="/finalResults" element={<ResultPage />} />
+            <Route path="/majors" element={<MajorsPage />} />
+            <Route path="/articles" element={<ArticlePage />} />
+          </Route>
         </Route>
-        {/* </Route> */}
       </Routes>
     </>
   );
