@@ -415,14 +415,6 @@ const MajorModal = ({
 
             <div className="modal-footer">
               <div className="d-flex flex-row gap-3 justify-content-start w-100 align-items-center">
-                {/* <Button
-                  disabled={!isFormChanged || loading}
-                  onClick={handleSubmit}
-                  style={{ width: "7.125rem" }}
-                  className={"btn-primary text-white fw-semibold"}
-                >
-                  {loading ? <Spinner /> : "Simpan"}
-                </Button> */}
                 <Button
                   disabled={!isFormChanged || loading} // Gunakan loading untuk menonaktifkan tombol saat submit
                   onClick={handleSubmit}
