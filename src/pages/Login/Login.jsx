@@ -87,7 +87,7 @@ export default function Login({ title, props }) {
                 value={form.user_number}
                 onChange={handleInput}
               />
-              <label htmlFor="floatingInput">Nomor admin</label>
+              <label htmlFor="floatingInput">Username admin</label>
             </div>
             <div className="form-floating mb-3">
               <Input
@@ -106,9 +106,6 @@ export default function Login({ title, props }) {
             </Button>
 
             <hr className="my-4" />
-            <small className="text-body-secondary">
-              By clicking Sign up, you agree to the terms of use.
-            </small>
           </form>
         </div>
       </div>

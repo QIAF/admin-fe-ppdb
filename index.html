@@ -1,10 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Admin PPDB SMK Muhammadiyah 3 Yogyakarta</title>
+    <script>
+      (function (m, a, z, e) {
+        var s, t;
+        try {
+          t = m.sessionStorage.getItem("maze-us");
+        } catch (err) {}
+
+        if (!t) {
+          t = new Date().getTime();
+          try {
+            m.sessionStorage.setItem("maze-us", t);
+          } catch (err) {}
+        }
+
+        s = a.createElement("script");
+        s.src = z + "?apiKey=" + e;
+        s.async = true;
+        a.getElementsByTagName("head")[0].appendChild(s);
+        m.mazeUniversalSnippetApiKey = e;
+      })(
+        window,
+        document,
+        "https://snippet.maze.co/maze-universal-loader.js",
+        "b934bb96-8550-409f-af94-e6f02473c359"
+      );
+    </script>
   </head>
   <body>
     <div id="root"></div>
