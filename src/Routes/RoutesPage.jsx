@@ -13,6 +13,7 @@ import PrivateRoute from "./PrivateRoute";
 import ResultPage from "../pages/Result/ResultPage";
 import ArticlePage from "../pages/Article/ArticlePage";
 import CreateUser from "../pages/User/CreateUser";
+import DataUser from "../pages/User/DataUser";
 
 export default function RoutesPage() {
   return (
@@ -24,6 +25,7 @@ export default function RoutesPage() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users" element={<User />} />
             <Route path="/users/detailUser/:id" element={<DetailUser />} />
+            <Route path="/users/data/:id" element={<DataUser />} />
             <Route path="/users/createUser" element={<CreateUser />} />
             <Route path="/users/updateUser/:id" element={<UpdateUser />} />
             <Route path="/scores" element={<ScoresPage />} />
