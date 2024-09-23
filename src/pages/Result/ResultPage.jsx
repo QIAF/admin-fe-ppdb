@@ -58,6 +58,9 @@ export default function ResultPage() {
   const filteredData = data.filter((item) =>
     item.student_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const sortedMajor = filteredData.sort((a, b) => {
+    return a.major_result.localeCompare(b.major_result);
+  });
 
   if (isPending) return <div className="center-screen">Loading...</div>;
   if (isError) return <div className="center-screen">Error fetching data.</div>;

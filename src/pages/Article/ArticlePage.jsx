@@ -164,6 +164,7 @@ export default function ArticlePage() {
         thead={theadArticle}
         className={"border"}
         setAddModal={setAddModal}
+        s
       >
         <RowTable
           data={data}
@@ -178,7 +179,10 @@ export default function ArticlePage() {
             >
               <td>{index + 1}</td>
               <td>{data?.article_name}</td>
-              <td>{data?.article_description}</td>
+              <td
+                dangerouslySetInnerHTML={{ __html: data?.article_description }}
+              />
+              {/* <td dang>{data?.article_description}</td> */}
             </tr>
           )}
         />
@@ -338,11 +342,11 @@ const ArticleModal = ({
                       name="article_description"
                       value={form.article_description}
                       onChange={handleInput}
-                      maxLength={1000} // Sesuaikan dengan panjang maksimum yang diinginkan
-                      rows="4" // Sesuaikan dengan jumlah baris yang diinginkan
+                      maxLength={2000}
+                      rows="4"
                     />
                     <small className="form-text text-muted">
-                      Maksimal {1000} karakter
+                      Maksimal {2000} karakter
                     </small>
                   </div>
                 </div>
